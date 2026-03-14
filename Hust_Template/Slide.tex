@@ -1,0 +1,414 @@
+% !TEX root = ./Slide.tex
+\documentclass{beamer}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+
+\usetheme{hust}
+
+\title{Hợp Nhất Ảnh Y Tế}
+\subtitle{Các Chỉ Số Đánh Giá Hiệu Suất Hợp Nhất Ảnh}
+\author{Đỗ Trung Kiên}
+\institute{Đại học Bách khoa Hà Nội}
+\date{\today}
+
+\begin{document}
+
+% ============================================================
+% Slide 1: Title
+% ============================================================
+\frame{\titlepage}
+
+% ============================================================
+% Slide 2: Table of Contents
+% ============================================================
+\begin{frame}{Nội dung trình bày}
+    \tableofcontents
+\end{frame}
+
+% ============================================================
+% Slide 3: Introduction
+% ============================================================
+\begin{frame}{Giới thiệu \& Phương pháp hợp nhất ảnh}
+    Hợp nhất ảnh y tế là quá trình kết hợp thông tin từ nhiều nguồn ảnh khác nhau (các phương thức khác nhau) nhằm cải thiện chất lượng ảnh phục vụ chẩn đoán.
+
+    \vspace{0.4cm}
+    \textbf{Hai phương pháp hợp nhất ảnh chính được xem xét:}
+    \begin{itemize}
+        \item \textbf{Hợp nhất trực tiếp VI-IR:} Hợp nhất ảnh không đồng nhất giữa ảnh hồng ngoại (IR) và ảnh khả kiến (VI) ở cấp độ điểm ảnh.
+        \item \textbf{Hợp nhất cải tiến VI-EVI:} Hợp nhất ảnh đồng nhất (ảnh khả kiến được tăng cường từ ảnh hồng ngoại sẽ được hợp nhất với ảnh khả kiến gốc).
+    \end{itemize}
+
+    \vspace{0.4cm}
+    \textbf{Đánh giá hiệu suất:}
+    \begin{itemize}
+        \item Đánh giá có tham chiếu (Yêu cầu phải có ảnh chuẩn - Ground Truth).
+        \item \textbf{Đánh giá mù (Không cần tham chiếu)} $\rightarrow$ \textit{Trọng tâm của bài nghiên cứu này}.
+    \end{itemize}
+\end{frame}
+
+
+% ============================================================
+\section{Nhóm Thước đo Dựa trên Lý thuyết Thông tin}
+% ============================================================
+
+\begin{frame}{Lý thuyết Thông tin trong Hợp nhất Ảnh}
+    \textbf{Khái niệm cơ bản:}
+    \begin{itemize}
+        \item Dựa trên các khái niệm về \textbf{Entropy} (độ bất ngờ/lượng tin) và \textbf{Thông tin tương hỗ} (MI).
+        \item Đánh giá lượng thông tin được truyền tải từ các ảnh nguồn ($A, B$) sang ảnh hợp nhất ($F$).
+        \item Ưu điểm: Không phụ thuộc vào mô hình toán học cụ thể của ảnh, có khả năng xử lý các đặc tính phi tuyến.
+    \end{itemize}
+    
+    \vspace{0.4cm}
+    \textbf{Các thước đo chính:} $Q_{MI}$, $Q_{TE}$, $Q_{NCIE}$.
+\end{frame}
+
+\subsection{Thông tin tương hỗ chuẩn hóa ($Q_{MI}$)}
+
+\begin{frame}{1.1. Thông tin tương hỗ chuẩn hóa ($Q_{MI}$)}
+    \textbf{Ý nghĩa:} Định lượng lượng thông tin "chung" giữa ảnh nguồn và ảnh hợp nhất. $Q_{MI}$ cao cho thấy ảnh hợp nhất giữ lại được nhiều chi tiết quan trọng từ cả hai ảnh đầu vào.
+
+    \begin{block}{Thông tin tương hỗ (MI)}
+    \begin{equation}
+        MI(U,V) = \sum_{u \in U} \sum_{v \in V} p(u,v) \log_2 \frac{p(u,v)}{p(u)p(v)}
+    \end{equation}
+    \end{block}
+
+    Tương đương, MI có thể được biểu diễn thông qua entropy kết hợp $H(U,V)$ và các entropy biên $H(U), H(V)$:
+    \begin{equation}
+        MI(U,V) = H(U) + H(V) - H(U,V)
+    \end{equation}
+\end{frame}
+
+% --- Slide: QMI (Part 2) ---
+\begin{frame}{1.1. Thông tin tương hỗ chuẩn hóa ($Q_{MI}$) - Tiếp theo}
+    Đối với các ảnh đầu vào $A, B$ và ảnh sau khi hợp nhất $F$:
+
+    \vspace{0.3cm}
+    \textbf{Thước đo của Qu và cộng sự:}
+    \begin{equation}
+        M_{F}^{AB} = MI(A,F) + MI(B,F)
+    \end{equation}
+    \textit{Nhược điểm:} Việc kết hợp các entropy ở các thang đo khác nhau có thể gây mất ổn định và làm sai lệch thước đo.
+
+    \vspace{0.3cm}
+    \textbf{Thước đo của Hossny (Được sử dụng trong nghiên cứu):}
+    \begin{block}{$Q_{MI}$ chuẩn hóa}
+    \begin{equation}
+        Q_{MI} = 2 \left[ \frac{MI(A,F)}{H(A)+H(F)} + \frac{MI(B,F)}{H(B)+H(F)} \right]
+    \end{equation}
+    \end{block}
+\end{frame}
+
+\subsection{Thước đo dựa trên Entropy Tsallis ($Q_{TE}$)}
+\begin{frame}{1.2. Thước đo dựa trên Entropy Tsallis ($Q_{TE}$)}
+    \textbf{Ý nghĩa:} Một dạng tổng quát hóa của MI, sử dụng entropy Tsallis để tăng cường khả năng đo lường sự phụ thuộc giữa các biến, đặc biệt hiệu quả trong môi trường có nhiễu.
+
+    \begin{block}{Entropy Tsallis ($q \neq 1$)}
+    \begin{equation}
+        I_q(A,F) = \frac{1}{1-q} \sum_{i,j} \left( \frac{h_{AF}(i,j)^q}{h_F(j)h_A(i)^{q-1}} \right)
+    \end{equation}
+    \end{block}
+
+    \textbf{Thước đo Tsallis chuẩn hóa (Nava và cộng sự):}
+    \begin{equation}
+        Q_{TE} = \frac{I_q(A,F) + I_q(B,F)}{H_q(A) + H_q(B) - I_q(A,B)}
+    \end{equation}
+
+    \vspace{0.2cm}
+    \footnotesize{\textit{Lưu ý: Các phương pháp dựa trên MI thường nhạy cảm với nhiễu xung và nhiễu Gaussian, do đó $Q_{TE}$ được đề xuất như một giải pháp thay thế mạnh mẽ và ổn định hơn.}}
+\end{frame}
+
+\subsection{Entropy thông tin tương quan phi tuyến ($Q_{NCIE}$)}
+\begin{frame}{1.3. Entropy thông tin tương quan phi tuyến ($Q_{NCIE}$)}
+    \textbf{Ý nghĩa:} Sử dụng ma trận tương quan phi tuyến để đánh giá mối quan hệ tổng thể giữa bộ ba $\{A, B, F\}$. Nó đo lường hiệu quả việc "nén" thông tin từ nguồn vào ảnh đích.
+    \begin{equation}
+        NCC(U,V) = H^b(U) + H^b(V) - H^b(U,V)
+    \end{equation}
+    Trong đó $b=256$ (số mức xám của ảnh), và các entropy được tính bằng:
+    $H^b(A) = \sum h_A(i)\log_b h_A(i)$.
+
+    \vspace{0.3cm}
+    \textbf{Ma trận tương quan phi tuyến ($R$):}
+    \begin{equation}
+        R = \begin{bmatrix}
+            1 & NCC_{AB} & NCC_{AF} \\
+            NCC_{BA} & 1 & NCC_{BF} \\
+            NCC_{FA} & NCC_{FB} & 1
+        \end{bmatrix}
+    \end{equation}
+\end{frame}
+
+% --- Slide: QNCIE (Part 2) ---
+\begin{frame}{1.3. Entropy thông tin tương quan phi tuyến ($Q_{NCIE}$) - Tiếp theo}
+    Gọi $\lambda_i$ (với $i=1, 2, 3$) là các giá trị riêng (eigenvalues) của ma trận tương quan phi tuyến $R$.
+
+    \vspace{0.5cm}
+    Giá trị của Entropy thông tin tương quan phi tuyến ($Q_{NCIE}$) được xác định bởi công thức:
+
+    \begin{block}{Thước đo $Q_{NCIE}$}
+    \begin{equation}
+        Q_{NCIE} = 1 + \sum_{i=1}^3 \frac{\lambda_i}{3} \log_b \frac{\lambda_i}{3}
+    \end{equation}
+    \end{block}
+
+    \vspace{0.4cm}
+    \textbf{Khoảng giá trị của nhóm Lý thuyết Thông tin:}
+    \begin{itemize}
+        \item \textbf{Khoảng giá trị:} $[0, 1]$.
+        \item \textbf{Giải thích:} Giá trị càng gần 1, hiệu suất hợp nhất càng tốt (lượng thông tin được bảo toàn tối đa).
+    \end{itemize}
+\end{frame}
+
+
+% ============================================================
+\section{Nhóm Thước đo Dựa trên Đặc trưng Ảnh}
+% ============================================================
+
+\begin{frame}{Đặc trưng Ảnh trong Hợp nhất Ảnh}
+    \textbf{Khái niệm cơ bản:}
+    \begin{itemize}
+        \item Tập trung vào các yếu tố thị giác quan trọng như \textbf{cạnh (edges)}, \textbf{góc}, và \textbf{kết cấu (texture)}.
+        \item Giả định rằng thông tin quan trọng nhất của ảnh nằm ở các vùng có sự thay đổi cường độ đột ngột (gradient lớn).
+        \item Sử dụng các toán tử trích xuất đặc trưng (Sobel, Wavelet, Phase Congruency).
+    \end{itemize}
+    
+    \vspace{0.4cm}
+    \textbf{Các thước đo chính:} $Q_G$, $Q_M$, $Q_{SF}$, $Q_P$.
+\end{frame}
+
+\subsection{Thước đo dựa trên Gradient ($Q_G$)}
+
+\begin{frame}{2.1. Thước đo dựa trên Gradient ($Q_G$)}
+    \textbf{Ý nghĩa:} Đo lường mức độ truyền tải thông tin cạnh từ ảnh nguồn sang ảnh hợp nhất. Đây là một trong những thước đo phổ biến nhất trong đánh giá hợp nhất ảnh.
+
+    \vspace{0.2cm}
+    Cường độ biên $g_A(i,j)$ và hướng biên $\alpha_A(i,j)$ của ảnh $A$:
+    \begin{equation}
+        g_A(i,j) = \sqrt{s^x_A(i,j)^2 + s^y_A(i,j)^2}, \quad \alpha_A(i,j) = \arctan \left( \frac{s^x_A(i,j)}{s^y_A(i,j)} \right)
+    \end{equation}
+
+    \vspace{0.2cm}
+    Tổng hợp giá trị bảo toàn thông tin cạnh $Q^{AF}(i,j)$ và $Q^{BF}(i,j)$, ta có thước đo tổng thể:
+    \begin{block}{Thước đo $Q_G$}
+    \begin{equation}
+        Q_G = \frac{\sum_{i=1}^N \sum_{j=1}^M \left[ Q^{AF}(i,j)w_A(i,j) + Q^{BF}(i,j)w_B(i,j) \right]}{\sum_{i=1}^N \sum_{j=1}^M \left[ w_A(i,j) + w_B(i,j) \right]}
+    \end{equation}
+    \end{block}
+    \footnotesize{\textit{Trong đó $w_A, w_B$ là các trọng số phụ thuộc vào cường độ biên.}}
+
+    \vspace{0.3cm}
+    \textbf{Khoảng giá trị:} $[0, 1]$. Giá trị 1 nghĩa là toàn bộ thông tin cạnh được bảo toàn hoàn hảo.
+\end{frame}
+
+\subsection{Thước đo đa tỷ lệ ($Q_M$)}
+\begin{frame}{2.2. Thước đo đa tỷ lệ ($Q_M$)}
+    \textbf{Ý nghĩa:} Đánh giá việc bảo toàn thông tin cạnh ở nhiều cấp độ phân giải khác nhau, giúp bao quát cả chi tiết nhỏ và cấu trúc lớn của ảnh.
+
+    \vspace{0.2cm}
+    Giá trị bảo toàn cạnh toàn cục tại tỷ lệ $s$:
+    \begin{equation}
+        EP^{AF}_s = \frac{\Delta^{AF}_{Hs} + \Delta^{AF}_{Vs} + \Delta^{AF}_{Ds}}{3}
+    \end{equation}
+
+    Thước đo chuẩn hóa tại tỷ lệ $s$ ($Q_s^{AB/F}$) được tính bằng trung bình có trọng số, với trọng số $w$ là năng lượng tần số cao của ảnh gốc.
+
+    \begin{block}{Thước đo $Q_M$ tổng thể}
+    \begin{equation}
+        Q_M = \prod_{s=1}^N \left( Q_s^{AB/F} \right)^{\alpha_s}
+    \end{equation}
+    \end{block}
+    \footnotesize{\textit{$\alpha_s$ là hằng số điều chỉnh tầm quan trọng của các mức tỷ lệ khác nhau.}}
+
+    \vspace{0.3cm}
+    \textbf{Khoảng giá trị:} $[0, 1]$. Giá trị càng cao cho thấy sự ổn định về chất lượng ở mọi tỷ lệ.
+\end{frame}
+
+\subsection{Thước đo Tần số không gian ($Q_{SF}$)}
+\begin{frame}{2.3. Thước đo Tần số không gian ($Q_{SF}$)}
+    \textbf{Ý nghĩa:} Đo lường "độ sắc nét" và mức độ hoạt động của ảnh. $Q_{SF}$ cao tương ứng với ảnh có nhiều chi tiết rõ nét và độ tương phản tốt.
+
+    \begin{equation}
+        SF = \sqrt{RF^2 + CF^2 + MDF^2 + SDF^2}
+    \end{equation}
+    Trong đó:
+    \begin{itemize}
+        \item $RF, CF$: Gradient theo hướng ngang (Row) và dọc (Column).
+        \item $MDF, SDF$: Gradient theo đường chéo chính và chéo phụ (kèm trọng số khoảng cách $w_d = 1/\sqrt{2}$).
+    \end{itemize}
+
+    \begin{block}{Thước đo $Q_{SF}$}
+    \begin{equation}
+        Q_{SF} = \frac{SF_F - SF_R}{SF_R}
+    \end{equation}
+    \end{block}
+    \footnotesize{\textit{$SF_F$ là tần số không gian của ảnh trộn, $SF_R$ là tần số không gian tham chiếu (lấy max gradient từ ảnh A và B).}}
+
+    \vspace{0.3cm}
+    \textbf{Khoảng giá trị:} Thường $\ge 0$. Giá trị càng cao càng tốt (thể hiện sự tăng cường độ chi tiết).
+\end{frame}
+
+\subsection{Thước đo dựa trên Đồng pha ($Q_P$)}
+\begin{frame}{2.4. Thước đo dựa trên Đồng pha ($Q_P$)}
+    \textbf{Ý nghĩa:} Đánh giá các đặc trưng cấu trúc (góc, cạnh) dựa trên miền tần số. Ưu điểm lớn nhất là không bị ảnh hưởng bởi sự thay đổi về độ sáng và độ tương phản.
+
+    Thước đo là tích của 3 hệ số tương quan dựa trên momen của đồng pha:
+    \begin{block}{Thước đo $Q_P$}
+    \begin{equation}
+        Q_P = (P_p)^\alpha (P_M)^\beta (P_m)^\gamma
+    \end{equation}
+    \end{block}
+
+    \begin{itemize}
+        \item $P_p$: Giá trị đồng pha (phase congruency).
+        \item $P_M, P_m$: Momen chính cực đại (Maximum) và cực tiểu (Minimum), chứa thông tin về các góc và cạnh.
+        \item $\alpha, \beta, \gamma$: Các tham số hàm mũ điều chỉnh tầm quan trọng của 3 thành phần.
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Khoảng giá trị:} $[0, 1]$. Giá trị 1 thể hiện sự tương đồng đặc trưng hoàn hảo.
+\end{frame}
+
+
+% ============================================================
+\section{Nhóm Thước đo Độ tương đồng Cấu trúc}
+% ============================================================
+
+\begin{frame}{Độ tương đồng Cấu trúc (Structural Similarity)}
+    \textbf{Khái niệm cơ bản:}
+    \begin{itemize}
+        \item Dựa trên giả định rằng Hệ thống Thị giác Con người (HVS) được thiết kế để trích xuất \textbf{thông tin cấu trúc}.
+        \item Không chỉ so sánh pixel-by-pixel mà xem xét mối tương quan giữa các pixel lân cận.
+        \item Kết hợp ba thành phần độc lập: Độ sáng, Độ tương phản, và Cấu trúc.
+    \end{itemize}
+    
+    \vspace{0.4cm}
+    \textbf{Các thước đo chính:} SSIM, UIQI, và các biến thể cửa sổ trượt ($Q_S, Q_W, Q_E, Q_C, Q_Y$).
+\end{frame}
+
+\subsection{Độ tương đồng cấu trúc (SSIM \& UIQI)}
+
+\begin{frame}{3.1. Độ tương đồng cấu trúc (SSIM \& UIQI)}
+    \textbf{Ý nghĩa:} So sánh cấu trúc của ảnh hợp nhất với các ảnh nguồn. Nó mô phỏng cách mắt người đánh giá sự thay đổi về hình dáng và họa tiết.
+
+    \begin{block}{Chỉ số SSIM}
+    \begin{equation}
+        SSIM(A,B) = \frac{(2\mu_A\mu_B + C_1)(2\sigma_{AB} + C_2)}{(\mu_A^2 + \mu_B^2 + C_1)(\sigma_A^2 + \sigma_B^2 + C_2)}
+    \end{equation}
+    \end{block}
+    \textit{Trong đó: $\mu$ là giá trị trung bình, $\sigma^2$ là phương sai, $\sigma_{AB}$ là hiệp phương sai. $C_1, C_2$ là hằng số chống chia cho 0.}
+
+    \vspace{0.3cm}
+    Khi $C_1 = C_2 = 0$, SSIM trở thành \textbf{Chỉ số chất lượng ảnh phổ quát (UIQI - $Q$)}:
+    \begin{equation}
+        Q(A,B) = \frac{4\sigma_{AB}\mu_A\mu_B}{(\sigma_A^2 + \sigma_B^2)(\mu_A^2 + \mu_B^2)}
+    \end{equation}
+
+    \vspace{0.2cm}
+    \textbf{Khoảng giá trị:} $[-1, 1]$ (thường quy về $[0, 1]$ trong hợp nhất ảnh). 1 là giống hệt nhau.
+\end{frame}
+
+\subsection{Các biến thể dựa trên SSIM}
+\begin{frame}{3.2. Các biến thể dựa trên SSIM (Cửa sổ trượt)}
+    \textbf{Ý nghĩa:} Thay vì tính chỉ số trung bình cho toàn bộ ảnh, các biến thể này chia nhỏ ảnh để đánh giá độ tương đồng tại từng vị trí cục bộ, sau đó tổng hợp lại bằng trọng số.
+
+    \begin{itemize}
+        \item \textbf{Thước đo của Piella ($Q_S, Q_W, Q_E$):} Kết hợp UIQI cục bộ với trọng số $\lambda(w)$ dựa trên độ nổi bật (phương sai) của khu vực ảnh.
+        \item \textbf{Thước đo của Cvejie ($Q_C$):} Trọng số phụ thuộc vào độ tương đồng không gian giữa ảnh đầu vào và ảnh trộn.
+        \item \textbf{Thước đo của Yang ($Q_Y$):} Sử dụng hàm điều kiện dựa trên mức độ tương đồng cục bộ:
+    \end{itemize}
+
+    \begin{equation}
+    Q_Y =
+    \begin{cases}
+      \lambda(w) SSIM_A + (1-\lambda(w)) SSIM_B & \text{nếu } SSIM(A,B|w) \ge 0.75 \\
+      \max \{SSIM_A, SSIM_B\} & \text{nếu } SSIM(A,B|w) < 0.75
+   \end{cases}
+   \end{equation}
+
+   \vspace{0.2cm}
+   \textbf{Khoảng giá trị:} $[0, 1]$. Giá trị càng cao càng phản ánh sự chân thực của cấu trúc tại mọi vùng ảnh.
+\end{frame}
+
+
+% ============================================================
+\section{Nhóm Thước đo Truyền cảm hứng từ Thị giác Con người}
+% ============================================================
+
+\begin{frame}{Thị giác Con người (HVS) trong Hợp nhất Ảnh}
+    \textbf{Khái niệm cơ bản:}
+    \begin{itemize}
+        \item Đây là nhóm thước đo phức tạp nhất, cố gắng mô hình hóa toán học cách bộ não và mắt người xử lý hình ảnh.
+        \item Sử dụng \textbf{Hàm độ nhạy tương phản (CSF)}: mắt người nhạy hơn với một số tần số không gian nhất định.
+        \item Xem xét \textbf{Hiệu ứng che lấp (Masking)}: các chi tiết mạnh có thể che khuất các chi tiết yếu hơn ở gần đó.
+    \end{itemize}
+    
+    \vspace{0.4cm}
+    \textbf{Các thước đo chính:} $Q_{CV}$ và $Q_{CB}$.
+\end{frame}
+
+\subsection{Thước đo Chen-Varshney ($Q_{CV}$)}
+
+\begin{frame}{4.1. Thước đo Chen-Varshney ($Q_{CV}$)}
+    \textbf{Ý nghĩa:} Sử dụng bộ lọc CSF để ưu tiên các thành phần mà mắt người dễ nhận thấy nhất. Nó đo lường "khoảng cách" cảm quan giữa ảnh nguồn và ảnh hợp nhất.
+    \begin{enumerate}
+        \item Trích xuất thông tin cạnh (Toán tử Sobel).
+        \item Chia ảnh thành các vùng cục bộ (windows).
+        \item Tính độ nổi bật vùng cục bộ ($\lambda$).
+        \item \textbf{Đo độ tương đồng:} Tính sai số bình phương trung bình của ảnh đã qua bộ lọc CSF ($D_A, D_B$).
+        \item \textbf{Đánh giá toàn cục:} Trung bình có trọng số của các vùng:
+    \end{enumerate}
+
+    \begin{block}{Thước đo $Q_{CV}$}
+    \begin{equation}
+        Q_{CV} = \frac{\sum_{l=1}^L \left( \lambda_A^l D_A^l + \lambda_B^l D_B^l \right)}{\sum_{l=1}^L \left( \lambda_A^l + \lambda_B^l \right)}
+    \end{equation}
+    \end{block}
+
+    \vspace{0.2cm}
+    \textbf{Khoảng giá trị:} $[0, 1]$. Giá trị cao hơn tương ứng với chất lượng cảm quan tốt hơn.
+\end{frame}
+
+\subsection{Thước đo Chen-Blum ($Q_{CB}$)}
+\begin{frame}{4.2. Thước đo Chen-Blum ($Q_{CB}$)}
+    \textbf{Ý nghĩa:} Một mô hình tiên tiến hơn, không chỉ dùng CSF mà còn tính đến độ tương phản cục bộ và bản đồ độ nổi bật (Saliency) để đánh giá những vùng thu hút ánh nhìn.
+    \begin{enumerate}
+        \item Lọc độ nhạy tương phản (CSF) trong miền tần số.
+        \item Tính toán độ tương phản cục bộ (Peli's contrast).
+        \item Tính toán bản đồ độ tương phản bị che lấp (Masked contrast map - $C'_A, C'_B$).
+        \item Tạo bản đồ độ nổi bật (Saliency map - $\lambda_A, \lambda_B$).
+        \item Tính bản đồ chất lượng toàn cục ($Q_{GQM}$):
+    \end{enumerate}
+
+    \begin{equation}
+        Q_{GQM}(i,j) = \lambda_A(i,j)Q_{AF}(i,j) + \lambda_B(i,j)Q_{BF}(i,j)
+    \end{equation}
+    \textit{Thước đo $Q_{CB}$ cuối cùng là giá trị trung bình của bản đồ $Q_{GQM}$.}
+
+    \vspace{0.3cm}
+    \textbf{Khoảng giá trị:} $[0, 1]$. Là một trong những thước đo sát nhất với đánh giá chủ quan của con người.
+\end{frame}
+
+
+% ============================================================
+% Slide: Tổng kết (đặt cuối cùng)
+% ============================================================
+\begin{frame}{Tổng kết}
+    \begin{itemize}
+        \item Đánh giá mù (không cần tham chiếu) là phương pháp rất quan trọng trong thực tế khi chúng ta không có sẵn ảnh gốc (ground truth).
+        \item \textbf{11 thước đo} đã được trình bày theo 4 nhóm:
+        \begin{enumerate}
+            \item \textbf{1. Lý thuyết Thông tin:} $Q_{MI}$, $Q_{TE}$, $Q_{NCIE}$
+            \item \textbf{2. Đặc trưng Ảnh:} $Q_G$, $Q_M$, $Q_{SF}$, $Q_P$
+            \item \textbf{3. Độ tương đồng Cấu trúc:} SSIM/UIQI, $Q_S, Q_W, Q_E, Q_{C}, Q_Y$
+            \item \textbf{4. Thị giác Con người:} $Q_{CV}$, $Q_{CB}$
+        \end{enumerate}
+        \item Các thước đo toán học này cung cấp cơ sở vững chắc để đánh giá một cách khách quan chất lượng của ảnh sau khi hợp nhất.
+    \end{itemize}
+\end{frame}
+
+\end{document}

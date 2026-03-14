@@ -1,0 +1,16 @@
+\babel@toc {vietnamese}{}\relax 
+\beamer@sectionintoc {1}{Nhóm Thước đo Dựa trên Lý thuyết Thông tin}{4}{0}{1}
+\beamer@subsectionintoc {1}{1}{Thông tin tương hỗ chuẩn hóa ($Q_{MI}$)}{5}{0}{1}
+\beamer@subsectionintoc {1}{2}{Thước đo dựa trên Entropy Tsallis ($Q_{TE}$)}{7}{0}{1}
+\beamer@subsectionintoc {1}{3}{Entropy thông tin tương quan phi tuyến ($Q_{NCIE}$)}{8}{0}{1}
+\beamer@sectionintoc {2}{Nhóm Thước đo Dựa trên Đặc trưng Ảnh}{10}{0}{2}
+\beamer@subsectionintoc {2}{1}{Thước đo dựa trên Gradient ($Q_G$)}{11}{0}{2}
+\beamer@subsectionintoc {2}{2}{Thước đo đa tỷ lệ ($Q_M$)}{12}{0}{2}
+\beamer@subsectionintoc {2}{3}{Thước đo Tần số không gian ($Q_{SF}$)}{13}{0}{2}
+\beamer@subsectionintoc {2}{4}{Thước đo dựa trên Đồng pha ($Q_P$)}{14}{0}{2}
+\beamer@sectionintoc {3}{Nhóm Thước đo Độ tương đồng Cấu trúc}{15}{0}{3}
+\beamer@subsectionintoc {3}{1}{Độ tương đồng cấu trúc (SSIM \& UIQI)}{16}{0}{3}
+\beamer@subsectionintoc {3}{2}{Các biến thể dựa trên SSIM}{17}{0}{3}
+\beamer@sectionintoc {4}{Nhóm Thước đo Truyền cảm hứng từ Thị giác Con người}{18}{0}{4}
+\beamer@subsectionintoc {4}{1}{Thước đo Chen-Varshney ($Q_{CV}$)}{19}{0}{4}
+\beamer@subsectionintoc {4}{2}{Thước đo Chen-Blum ($Q_{CB}$)}{20}{0}{4}
