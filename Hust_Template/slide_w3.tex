@@ -1,9 +1,16 @@
 \documentclass{beamer}
 
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[T5]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{caption}
+
 \usetheme{hust}
 
 \title{Xử lý Ảnh và Video}
-\subtitle{Lý thuyết về các Không gian màu: RGB, YUV, YCrCb, HSY}
+\subtitle{Lý thuyết và Ứng dụng các Không gian màu trong Hợp nhất Ảnh Y tế}
 \author{Đỗ Trung Kiên}
 \institute{Đại học Bách khoa Hà Nội}
 \date{\today}
@@ -30,12 +37,11 @@
     \textbf{Đặc điểm cơ bản:}
     \begin{itemize}
         \item Là mô hình màu \textbf{cộng tính} (additive color model).
-        \item Dựa trên sự kết hợp của ba màu cơ bản: Đỏ (Red), Lục (Green), Lam (Blue).
-        \item Được sử dụng phổ biến trong các thiết bị hiển thị (màn hình, TV) và cảm biến ảnh (Camera).
+        \item Dựa trên sự kết hợp của ba màu: Đỏ (Red), Lục (Green), Lam (Blue).
         \item Mỗi thành phần thường được biểu diễn bằng 8 bit (giá trị từ 0 đến 255).
     \end{itemize}
 
-    \vspace{0.3cm}
+    \vspace{0.2cm}
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \textbf{Biểu diễn hình học:}
@@ -53,6 +59,25 @@
     \end{columns}
 \end{frame}
 
+
+
+\begin{frame}{Tại sao phải chuyển đổi không gian màu khi Fusion?}
+    Trong fusion ảnh y tế, vấn đề lớn nhất là: \textbf{Không phải tất cả thông tin đều quan trọng như nhau}.
+    \begin{itemize}
+        \item \textbf{Intensity (Độ sáng)}: Chứa cấu trúc giải phẫu (xương, mô từ CT hoặc MRI).
+        \item \textbf{Color (Màu sắc)}: Chứa thông tin chức năng (từ SPECT, PET).
+    \end{itemize}
+    
+    \vspace{0.3cm}
+    \textbf{Chiến lược Fusion chuẩn:}
+    \begin{enumerate}
+        \item Chuyển từ RGB sang các không gian \textbf{tách sáng vs màu}.
+        \item Thực hiện Fusion trên kênh độ sáng (để tối ưu cấu trúc).
+        \item Giữ nguyên hoặc xử lý riêng thông tin màu.
+        \item Chuyển ngược về RGB để hiển thị.
+    \end{enumerate}
+\end{frame}
+
 % ============================================================
 \section{Không gian màu YUV}
 % ============================================================
@@ -60,24 +85,10 @@
 \begin{frame}{2. Không gian màu YUV}
     \textbf{Khái niệm:}
     \begin{itemize}
-        \item Tách biệt thông tin độ sáng (\textbf{Luminance}) và thông tin màu sắc (\textbf{Chrominance}).
-        \item \textbf{Y}: Độ sáng (Luma).
-        \item \textbf{U, V}: Các thành phần hiệu màu (Chroma).
-        \item Được phát triển để tương thích ngược giữa TV màu và TV trắng đen.
+        \item Tách biệt Chiếu sáng (\textbf{Y}) và Hiệu màu (\textbf{U, V}).
     \end{itemize}
-
-    \vspace{0.3cm}
-    \textbf{Ưu điểm:}
-    \begin{itemize}
-        \item Tận dụng đặc điểm mắt người: Nhạy cảm với độ sáng hơn màu sắc.
-        \item Cho phép giảm băng thông truyền tải của các thành phần U, V mà không làm giảm đáng kể chất lượng cảm nhận (Chroma Subsampling).
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Cấu trúc và Chuyển đổi YUV}
-    Công thức chuyển đổi cơ bản từ RGB sang YUV (theo tiêu chuẩn BT.601):
     
-    \begin{block}{Công thức chuyển đổi}
+    \begin{block}{Công thức chuyển đổi (BT.601)}
     \begin{equation}
     \begin{aligned}
         Y &= 0.299R + 0.587G + 0.114B \\
@@ -87,93 +98,63 @@
     \end{equation}
     \end{block}
 
+    \vspace{0.2cm}
+    \textbf{Vị trí trong Medical Fusion:}
+    \begin{itemize}
+        \item \textbf{Vị trí:} Ít dùng trong các Paper hiện đại (chủ yếu dùng trong video).
+        \item \textbf{Thay thế:} Gần như bị thay thế hoàn toàn bởi YCbCr trong các nghiên cứu gần đây.
+    \end{itemize}
+\end{frame}
+
+% ============================================================
+\section{Không gian màu YCbCr}
+% ============================================================
+
+\begin{frame}{3. Không gian màu YCbCr (QUAN TRỌNG NHẤT)}
+    \textbf{Lý thuyết cơ bản:}
+    \begin{itemize}
+        \item Phiên bản kỹ thuật số của YUV, dùng trong JPEG/MPEG.
+        \item \textbf{Y (Luminance)}: Chứa toàn bộ các đặc trưng: \textbf{Edge (Cạnh), Texture (Vân), Structure (Cấu trúc)}.
+        \item \textbf{Cb, Cr (Chroma)}: Chứa thông tin màu.
+    \end{itemize}
+
+    \begin{block}{Ma trận chuyển đổi (ITU-R BT.601)}
+    \begin{equation*}
+    \begin{bmatrix} Y \\ Cb \\ Cr \end{bmatrix} = \begin{bmatrix} 16 \\ 128 \\ 128 \end{bmatrix} + \begin{bmatrix} 65.481 & 128.553 & 24.966 \\ -37.797 & -74.203 & 112.000 \\ 112.000 & -93.786 & -18.214 \end{bmatrix} \begin{bmatrix} R \\ G \\ B \end{bmatrix}
+    \end{equation*}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Quy trình chuẩn trong Image Fusion}
     \vspace{0.3cm}
+    \textbf{Chiến lược thực hiện:}
+    \begin{itemize}
+        \item \textbf{CT/MRI} $\to$ Đưa thông tin cấu trúc dày đặc vào \textbf{kênh Y}.
+        \item \textbf{PET/SPECT} $\to$ Màu sắc chức năng được giữ ở \textbf{Cb, Cr}.
+        \item Xử lý: Tối ưu hóa kênh Y bằng các thuật toán phức tạp $\to$ Chuyển ngược RGB.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Tối ưu hóa Metric trên kênh Y}
+    Fusion tốt thực chất là việc tối ưu hóa đúng \textbf{Y channel}. Đây là nơi các Paper tập trung sử dụng các chỉ số:
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \begin{itemize}
-                \item Thành phần $Y$ chứa thông tin chi tiết.
-                \item Hiệu quả trong nén và truyền dẫn.
+                \item \textbf{QMI}: Chỉ số tương quan chất lượng.
+                \item \textbf{SSIM}: Độ tương đồng cấu trúc.
+                \item \textbf{Entropy}: Lượng tin thu được.
             \end{itemize}
         \end{column}
         \begin{column}{0.5\textwidth}
-            \centering
-            \includegraphics[width=0.8\textwidth]{Image/yuv.jpg}
-            \captionof{figure}{Tách kênh Y, U, V}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-% ============================================================
-\section{Không gian màu YCrCb}
-% ============================================================
-
-\begin{frame}{3. Không gian màu YCrCb}
-    \textbf{Đặc điểm:}
-    \begin{itemize}
-        \item Là một phiên bản rời rạc (digital) của YUV.
-        \item Được sử dụng rộng rãi trong nén ảnh \textbf{JPEG} và nén video \textbf{MPEG, H.264}.
-        \item \textbf{Y}: Luminance (Luma).
-        \item \textbf{Cb}: Chroma Blue (Hiệu màu xanh lam: $B - Y$).
-        \item \textbf{Cr}: Chroma Red (Hiệu màu đỏ: $R - Y$).
-    \end{itemize}
-
-    \vspace{0.3cm}
-    \textbf{Phạm vi giá trị (8-bit):}
-    \begin{itemize}
-        \item Y thường nằm trong khoảng [16, 235].
-        \item Cb, Cr nằm trong khoảng [16, 240].
-        \item Việc giới hạn này giúp tránh hiện tượng quá tín hiệu trong truyền dẫn.
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Chuyển đổi RGB sang YCrCb}
-    Công thức chuẩn cho tín hiệu kỹ thuật số (ITU-R BT.601):
-
-    \begin{block}{Ma trận chuyển đổi}
-    \begin{equation}
-    \begin{bmatrix} 
-        Y \\ Cb \\ Cr 
-    \end{bmatrix} = 
-    \begin{bmatrix} 
-        16 \\ 128 \\ 128 
-    \end{bmatrix} + 
-    \begin{bmatrix} 
-        65.481 & 128.553 & 24.966 \\
-        -37.797 & -74.203 & 112.000 \\
-        112.000 & -93.786 & -18.214
-    \end{bmatrix}
-    \begin{bmatrix} 
-        R \\ G \\ B 
-    \end{bmatrix}
-    \end{equation}
-    \end{block}
-    \footnotesize{(Lưu ý: R, G, B ở đây thường được chuẩn hóa về khoảng [0, 1])}
-
-    \vspace{0.3cm}
-    \textbf{Lấy mẫu Chroma (Subsampling):}
-    Cấu trúc 4:4:4, 4:2:2, 4:2:0 giúp tiết kiệm dung lượng.
-    
-    \begin{columns}
-        \begin{column}{0.5\textwidth}
-            \begin{block}{Chuyển đổi JPEG}
-            \begin{equation}
-            \begin{aligned}
-                Cb &= (B - Y) / 2 + 0.5 \\
-                Cr &= (R - Y) / 1.6 + 0.5
-            \end{aligned}
-            \end{equation}
+            \begin{block}{Insight cho nghiên cứu}
+                Bản chất của các thuật toán Fusion hiện đại (CNN, Transformer) là tìm cách giữ được thông tin cấu trúc tốt nhất trên kênh Y mà không làm nhiễu thông tin màu ở Cb, Cr.
             \end{block}
         \end{column}
-        \begin{column}{0.5\textwidth}
-            \centering
-            \includegraphics[width=0.8\textwidth]{Image/ycbcr.png}
-            \captionof{figure}{Thang màu YCrCb}
-        \end{column}
     \end{columns}
 \end{frame}
 
 % ============================================================
-\section{Không gian màu HSY}
+\section{Không gian màu HSY/HSV}
 % ============================================================
 
 \begin{frame}{4. Không gian màu HSY (Hue, Saturation, Luma)}
@@ -184,81 +165,64 @@
         \item \textbf{S (Saturation)}: Độ bão hòa (Độ thuần khiết).
         \item \textbf{Y (Luma)}: Độ sáng cảm nhận (tổng trọng số RGB).
     \end{itemize}
-\end{frame}
-
-\begin{frame}{Tại sao dùng HSY/HSV?}
+    \vspace{0.2cm}
     \begin{columns}
-        \begin{column}{0.5\textwidth}
-            \begin{itemize}
-                \item Gần gũi với mô tả con người ("màu đỏ nhạt").
-                \item Hữu ích trong tách ngưỡng (thresholding) theo màu.
-                \item Ổn định hơn RGB dưới các điều kiện chiếu sáng khác nhau.
-            \end{itemize}
-        \end{column}
         \begin{column}{0.5\textwidth}
             \centering
             \includegraphics[width=0.8\textwidth]{Image/HSV.png}
-            \captionof{figure}{Tọa độ HSV}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item Thay đổi \textbf{Y} giúp điều chỉnh độ sáng mà không làm biến đổi màu sắc.
+                \item Thay đổi \textbf{S} giúp làm ảnh rực rỡ hơn hoặc chuyển về ảnh xám.
+            \end{itemize}
         \end{column}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Chi tiết về HSV (Hue - Saturation - Value)}
-    \begin{columns}
-        \begin{column}{0.5\textwidth}
-            \begin{itemize}
-                \item \textbf{Hue}: Góc màu.
-                \item \textbf{Saturation}: Độ bão hòa.
-                \item \textbf{Value}: Độ sáng.
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.5\textwidth}
-            \centering
-            \includegraphics[width=0.8\textwidth]{Image/HSV.png}
-            \captionof{figure}{Mô hình nón HSV}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}{So sánh HSY với RGB}
+\begin{frame}{HSV trong Medical Image Fusion}
+    \textbf{Ý nghĩa y tế:}
     \begin{itemize}
-        \item \textbf{RGB}: Các thành phần có mối tương quan rất chặt chẽ. Thay đổi độ sáng thường làm thay đổi cả ba kênh.
-        \item \textbf{HSY}: Các thành phần được tách biệt rõ rệt.
-        \begin{itemize}
-            \item Thay đổi \textbf{Y} giúp điều chỉnh độ sáng mà không làm biến đổi màu sắc (\textit{Color constant}).
-            \item Thay đổi \textbf{S} giúp làm ảnh rực rỡ hơn hoặc chuyển về ảnh xám.
-        \end{itemize}
+        \item \textbf{H}: Loại màu; \textbf{S}: Độ bão hòa/đậm màu; \textbf{V}: Độ sáng.
     \end{itemize}
 
-    \vspace{0.4cm}
-    \begin{block}{Công thức Luma (Y)}
-        \begin{equation}
-            Y = 0.299R + 0.587G + 0.114B
-        \end{equation}
-        Giá trị này phản ánh đúng độ sáng mà mắt người cảm nhận được (màu xanh lá trông sáng hơn màu xanh dương ở cùng cường độ vật lý).
-    \end{block}
+    \vspace{0.2cm}
+    \textbf{Tại sao hạn chế trong Fusion?}
+    \begin{itemize}
+        \item \textbf{Tính không tuyến tính}: Các phép toán Fusion phức tạp khó áp dụng chính xác.
+        \item \textbf{Grayscale}: CT/MRI thường là ảnh xám, không tận dụng được thế mạnh về Hue của HSV.
+    \end{itemize}
+
+    \vspace{0.2cm}
+    \textbf{Ứng dụng thực tế:}
+    \begin{itemize}
+        \item Thường dùng trong \textbf{Segmentation} (phân đoạn) hoặc \textbf{Detection} (phát hiện vùng bệnh lý dựa trên sắc thái màu) hơn là dùng cho Fusion nghiêm túc.
+    \end{itemize}
 \end{frame}
 
 % ============================================================
 \section{Tổng kết}
 % ============================================================
 
-\begin{frame}{Tổng kết và So sánh}
+\begin{frame}{So sánh các hệ màu trong bài toán Fusion}
     \begin{table}
         \centering
         \small
-        \begin{tabular}{|l|p{6cm}|}
+        \renewcommand{\arraystretch}{1.2}
+        \begin{tabular}{|l|c|c|c|}
             \hline
-            \textbf{Không gian} & \textbf{Ứng dụng chính} \\ \hline
-            \textbf{RGB} & Hiển thị màn hình, thu nhận ảnh gốc. \\ \hline
-            \textbf{YUV} & Truyền dẫn tín hiệu TV, video analog. \\ \hline
-            \textbf{YCrCb} & Nén ảnh (JPEG), nén video kỹ thuật số. \\ \hline
-            \textbf{HSY} & Xử lý đặc trưng màu sắc, thị giác máy tính. \\ \hline
+            \textbf{Tiêu chí} & \textbf{HSV} & \textbf{YCbCr} & \textbf{YUV} \\ \hline
+            Phù hợp CT/MRI & \textcolor{red}{$\times$} & \textcolor{blue}{\checkmark} & \textcolor{orange}{!} \\ \hline
+            Tách sáng/màu tốt & \textcolor{orange}{!} & \textcolor{blue}{\checkmark} & \textcolor{blue}{\checkmark} \\ \hline
+            Dùng trong Paper & $\times$ & $\star\star\star\star$ & $\star$ \\ \hline
+            Dễ optimize metric & $\times$ & \textcolor{blue}{\checkmark} & \textcolor{orange}{!} \\ \hline
         \end{tabular}
     \end{table}
 
-    \vspace{0.5cm}
-    \textbf{Điểm chung:} Tất cả đều có thể chuyển đổi qua lại lẫn nhau thông qua các phép biến đổi toán học (ma trận hoặc hệ tọa độ cực).
+    \vspace{0.4cm}
+    \begin{block}{Kết luận}
+        Để Fusion hiệu quả (giữ được Edge/Structure và tối ưu SSIM/Entropy), \textbf{YCbCr} là không gian màu quan trọng nhất cần tập trung trong các báo cáo khoa học.
+    \end{block}
 \end{frame}
 
 % ============================================================

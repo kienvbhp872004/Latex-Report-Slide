@@ -1,0 +1,14 @@
+\babel@toc {vietnamese}{}\relax 
+\beamer@sectionintoc {1}{Tổng quan về Phân tích và Tái tạo ảnh}{3}{0}{1}
+\beamer@sectionintoc {2}{Các phương pháp phân tích ảnh}{5}{0}{2}
+\beamer@subsectionintoc {2}{1}{Color Space (Không gian màu)}{5}{0}{2}
+\beamer@subsectionintoc {2}{2}{Pyramid (Kim tự tháp)}{9}{0}{2}
+\beamer@subsectionintoc {2}{3}{Wavelet}{10}{0}{2}
+\beamer@subsectionintoc {2}{4}{Sparse Representation (Biểu diễn thưa)}{12}{0}{2}
+\beamer@subsectionintoc {2}{5}{Salient Feature (Đặc trưng nổi bật)}{13}{0}{2}
+\beamer@sectionintoc {3}{Quy tắc Hợp nhất (Fusion Rules)}{15}{0}{3}
+\beamer@subsectionintoc {3}{1}{Fuzzy Logic (Logic mờ)}{16}{0}{3}
+\beamer@subsectionintoc {3}{2}{Statistics (Thống kê)}{17}{0}{3}
+\beamer@subsectionintoc {3}{3}{Human Visual System (HVS)}{19}{0}{3}
+\beamer@subsectionintoc {3}{4}{Objective Evaluation Metrics}{21}{0}{3}
+\beamer@sectionintoc {4}{Tổng kết}{22}{0}{4}

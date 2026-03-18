@@ -1,5 +1,6 @@
+\babel@toc {vietnamese}{}\relax 
 \beamer@sectionintoc {1}{Không gian màu RGB}{3}{0}{1}
-\beamer@sectionintoc {2}{Không gian màu YUV}{4}{0}{2}
-\beamer@sectionintoc {3}{Không gian màu YCrCb}{6}{0}{3}
-\beamer@sectionintoc {4}{Không gian màu HSY}{8}{0}{4}
-\beamer@sectionintoc {5}{Tổng kết}{12}{0}{5}
+\beamer@sectionintoc {2}{Không gian màu YUV}{5}{0}{2}
+\beamer@sectionintoc {3}{Không gian màu YCbCr}{6}{0}{3}
+\beamer@sectionintoc {4}{Không gian màu HSY/HSV}{9}{0}{4}
+\beamer@sectionintoc {5}{Tổng kết}{11}{0}{5}

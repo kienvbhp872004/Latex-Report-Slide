@@ -1,3 +1,4 @@
 {
-    "latex-workshop.latex.rootFile": "Slide.tex"
+    "latex-workshop.latex.autoBuild.run": "never",
+    "latex-workshop.latex.recipe.default": "first"
 }
