@@ -49,7 +49,7 @@
     \end{block}
 \end{frame}
 
-\begin{frame}{5 Phương pháp phân tích chính}
+\begin{frame}{6 Phương pháp phân tích chính}
     \begin{table}
         \centering
         \renewcommand{\arraystretch}{1.2}
@@ -61,6 +61,7 @@
             Color space   & \checkmark & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ \\ \hline
             Pyramid       & $\times$ & \checkmark & \checkmark & $\times$ & $\times$ & $\times$ \\ \hline
             Wavelet       & $\times$ & \checkmark & \checkmark & \checkmark & $\times$ & \checkmark \\ \hline
+            Geometric     & $\times$ & \checkmark & \checkmark & \checkmark & $\times$ & \checkmark \\ \hline
             Sparse rep.   & \checkmark & \checkmark & $\times$ & $\times$ & \checkmark & $\times$ \\ \hline
             Salient feat. & \checkmark & $\times$ & \checkmark & \checkmark & $\times$ & $\times$ \\ \hline
         \end{tabular}}
@@ -72,7 +73,7 @@
 \section{Các phương pháp phân tích ảnh}
 % ============================================================
 
-\subsection{Color Space (Không gian màu)}
+\subsection{2.1. Nhóm Không gian màu (Color Space)}
 
 \begin{frame}{2.1. Phương pháp Color Space}
     \begin{columns}[T]
@@ -154,90 +155,140 @@
     \end{columns}
 \end{frame}
 
-\subsection{Pyramid (Kim tự tháp)}
+\subsection{2.2. Nhóm Phân rã Đa tỉ lệ (Multi-scale - MSD/MGD)}
 
-\begin{frame}{2.2. Phương pháp Pyramid}
+\begin{frame}{Tầm quan trọng của Phân rã Đa tỉ lệ (MSD)}
     \small
-    \textbf{Đặc điểm:} Biểu diễn \textbf{đa độ phân giải}, phổ biến trong hợp nhất ảnh y tế.
-    \quad
-    \textbf{Xây tháp:} $p_i = F_i * I,\; r_i = I - p_i$
-    \textbf{Fuse} từng mức $\to$
-    \textbf{Inverse Pyramid:} $I_F = \sum r_i + p_{\text{max}}$
-    \quad\textbf{Ưu:} Multi-scale, đơn giản.\;\textbf{Nhược:} Không scale invariance.
-    \normalsize
+    \textbf{Tại sao cần Đa tỉ lệ?} 
+    Ảnh y tế chứa thông tin ở nhiều mức độ chi tiết (cấu trúc lớn, mô mềm, mạch máu nhỏ...). 
+    Phân rã đa tỉ lệ giúp trích xuất các thành phần này một cách hiệu quả.
 
-    \vspace{0.15cm}
-    \centering
-    \includegraphics[width=\textwidth,height=0.52\textheight,keepaspectratio]{../Slide/DATN/Week_3/Image_Decomposition/three-levels pyramid.png}
-    \\[2pt]
-    {\footnotesize\textit{Pipeline 3-level Pyramid Fusion}}
+    \vspace{0.2cm}
+    \textbf{Lợi ích chính:}
+    \begin{itemize}
+        \item Khả năng trích xuất cấu trúc không gian qua các thang đo khác nhau.
+        \item Giảm thiểu sự dư thừa thông tin giữa các modal.
+        \item Phù hợp với cơ chế thị giác của con người (HVS).
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \begin{block}{Sự tiến hóa của MSD}
+        Pyramid (Tuyến tính) $\to$ Wavelet (Tần số) $\to$ MGD (Geometric: Hướng \& Cạnh)
+    \end{block}
 \end{frame}
 
-\subsection{Wavelet}
+\begin{frame}{2.2.1. Phương pháp Pyramid}
+    \small
+    \textbf{Đặc điểm:} Quá trình phân tách bao gồm việc \textbf{lọc (filtering)} và \textbf{giảm mẫu (down-sampling)} liên tiếp, tạo ra các bản sao thông dải và thông thấp.
+    \begin{equation}
+        R_i = F_i * P_i; \quad P_{i+1} = P_i - R_i; \quad I_{rec} = P_{L+1} + \sum_{i=1}^L R_i
+    \end{equation}
+    ($R_i$: residual, $F_i$: filter, $P_i$: pyramid representation)
 
-\begin{frame}{2.3. Phương pháp Wavelet}
+    \vspace{0.2cm}
+    \textbf{Các loại phổ biến:} Laplacian [11], Gradient [16], Morphological [41], Steerable [42], Ratio [38].
+
+    \vspace{0.2cm}
+    \begin{alertblock}{Hạn chế quan trọng}
+        Cơ chế không phân định hướng (\textit{non-orientation}), gây ra \textbf{blocking effects} (hiệu ứng khối) và tạo ra các cạnh không mong muốn (\textit{undesired edges}), không giữ được thông tin salient dưới tác động của nhiễu.
+    \end{alertblock}
+\end{frame}
+
+
+
+\begin{frame}{2.2.2. Phương pháp Wavelet (Biến đổi Sóng con)}
     \begin{columns}[T]
-        \begin{column}{0.38\textwidth}
+        \begin{column}{0.45\textwidth}
             \small
-            \textbf{Đặc điểm:} Nhóm \textbf{mạnh nhất} nhờ multi-scale, scale invariance và directive filter.
-
-            \vspace{0.1cm}
-            \textbf{Các biến thể:}
+            \textbf{Cấu trúc:} Kết hợp hai nhóm hàm: \textit{wavelet functions} (mẹ) và \textit{scaling functions}.
+            \begin{equation}
+                \psi_{a,b}(x) = a^{-1/2} \psi\left(\frac{x-b}{a}\right)
+            \end{equation}
+            \textbf{Ưu điểm vượt trội:}
             \begin{itemize}
-                \item \textbf{DWT}: Low + High freq.
-                \item \textbf{RDWT}: Shift-invariant.
-                \item \textbf{Contourlet}: Dir. filter banks.
-                \item \textbf{NSCT}: Shift-invariant.
-                \item \textbf{Shearlet}: Hướng vô hạn.
+                \item Bảo toàn thông tin tốt.
+                \item Tách biệt tốt tần số cao/thấp.
+                \item Linh hoạt với nhiều độ phân giải khác nhau.
             \end{itemize}
             \normalsize
         \end{column}
-        \begin{column}{0.60\textwidth}
-            \centering
-            \includegraphics[width=0.88\linewidth]{../Slide/DATN/Week_3/Image_Decomposition/wavelet.png}
-            \\[2pt]
-            {\footnotesize\textit{Pipeline Wavelet-based Fusion}}
+        \begin{column}{0.53\textwidth}
+            \small
+            \textbf{Các cải tiến (Advanced WT):}
+            \begin{itemize}
+                \item \textbf{DWT}: Thiếu tính bất biến dịch chuyển (\textit{shift-invariance}) do down-sampling.
+                \item \textbf{RDWT/SWT}: Khắc phục tính bất biến dịch chuyển.
+                \item \textbf{DTCWT}: Hỗ trợ 6 hướng, gần như bất biến dịch chuyển.
+                \item \textbf{QWT}: Magnitude bất biến dịch chuyển và pha giàu thông tin hình học.
+            \end{itemize}
+            \normalsize
         \end{column}
     \end{columns}
 \end{frame}
 
-\begin{frame}{So sánh các biến thể Wavelet}
-    \begin{table}
-        \centering
-        \small
-        \renewcommand{\arraystretch}{1.3}
-        \begin{tabular}{|l|c|c|}
-            \hline
-            \textbf{Phương pháp} & \textbf{Low-freq. band} & \textbf{High-freq. band} \\ \hline
-            Wavelet    & 1 & 3 (finite) \\ \hline
-            Contourlet & 1 & Nhiều hơn Wavelet \\ \hline
-            Shearlet   & 1 & Vô hạn (controlled by param.) \\ \hline
-        \end{tabular}
-        \caption{So sánh per-level decomposition (Table 2)}
-    \end{table}
+\begin{frame}{2.2.3. MGD: Ridgelet \& Curvelet}
+    \small
+    \textbf{Mục tiêu:} Khắc phục hạn chế của Wavelet trong việc biểu diễn các đặc trưng bất đẳng hướng và các đường chuyển tiếp sắc nét (cạnh).
 
-    \vspace{0.3cm}
-    \begin{columns}
-        \begin{column}{0.5\textwidth}
-            \textbf{Ưu điểm:}
-            \begin{itemize}
-                \item Scale invariance.
-                \item Directive filter.
-                \item Giữ tốt chi tiết cạnh và texture.
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.5\textwidth}
-            \textbf{Nhược điểm:}
-            \begin{itemize}
-                \item Độ phức tạp tính toán cao hơn Pyramid.
-            \end{itemize}
-        \end{column}
-    \end{columns}
+    \vspace{0.2cm}
+    \textbf{Ridgelet Transform (RT):}
+    \begin{itemize}
+        \item Biểu diễn thưa các đối tượng có \textbf{gián đoạn trên đường thẳng}.
+        \item Là phân tích wavelet trong miền \textit{Radon}.
+        \item Phù hợp cho việc phát hiện hình dạng và đường thẳng.
+    \end{itemize}
+
+    \vspace{0.2cm}
+    \textbf{Curvelet Transform (CVT):}
+    \begin{itemize}
+        \item Tiến hóa từ Ridgelet để xử lý tốt các \textbf{đường cong}.
+        \item Tuân theo quy luật tỷ lệ parabol: $width = length^2$.
+        \item Gen-2 (Wrapping algorithm) nhanh hơn và giảm dư thừa.
+    \end{itemize}
 \end{frame}
 
-\subsection{Sparse Representation (Biểu diễn thưa)}
+\begin{frame}{2.2.4. MGD: Contourlet}
+    \small
+    \textbf{Cấu trúc (CRT):} Kết hợp \textbf{Laplacian Pyramid} (bắt điểm gián đoạn) và \textbf{Directional Filter Bank} (liên kết điểm thành cấu trúc tuyến tính).
+    
+    \vspace{0.2cm}
+    \textbf{Đặc điểm nổi bật:}
+    \begin{itemize}
+        \item Bắt được các đặc trưng hình học nội tại (contours).
+        \item Phân chia 8 hướng cơ bản (và nhiều hơn ở các mức cao).
+    \end{itemize}
 
-\begin{frame}{2.4. Phương pháp Sparse Representation}
+    \vspace{0.2cm}
+    \begin{block}{Non-subsampled Contourlet (NSCT)}
+        Biến thể \textbf{bất biến dịch chuyển hoàn toàn} nhờ loại bỏ quá trình down/up-sampling. NSCT cực kỳ hiệu quả trong việc duy trì độ sáng cục bộ và giảm biến dạng trong ảnh CT/MRI.
+    \end{block}
+\end{frame}
+
+\begin{frame}{2.2.5. State-of-the-Art: Shearlet Transform}
+    \small
+    \textbf{Ý tưởng:} Tiến hóa từ Curvelet, thay thế directional filter bằng \textbf{shear filter}.
+    \begin{equation}
+        \psi_{a,s,t}(x) = a^{-3/4} \psi(A_a^{-1} S_s^{-1} (x-t))
+    \end{equation}
+    ($A_a$: parabolic scaling, $S_s$: shear matrix)
+
+    \vspace{0.2cm}
+    \textbf{Tại sao Shearlet tốt nhất?}
+    \begin{itemize}
+        \item \textbf{Anisotropic shear:} Kiểm soát độ nhạy hướng cực tốt.
+        \item \textbf{Tối ưu thưa (Optimally sparse):} Biểu diễn các đường chuyển tiếp sắc nét vượt trội so với Wavelet/Contourlet.
+        \item \textbf{Đa hướng:} Số lượng hướng ở mỗi mức là không giới hạn.
+    \end{itemize}
+
+    \vspace{0.2cm}
+    \begin{exampleblock}{NSST (Non-subsampled Shearlet)}
+        Loại bỏ hiện tượng \textbf{Gibbs} do quá trình lấy mẫu, là lựa chọn hàng đầu cho các tác vụ hợp nhất ảnh y tế hiện nay.
+    \end{exampleblock}
+\end{frame}
+
+\subsection{2.3. Nhóm Hiện đại & Đặc trưng (Modern Methods)}
+
+\begin{frame}{2.3.1. Phương pháp Sparse Representation}
     \small
     \textbf{Ý tưởng:} Ảnh chia sẻ cùng tập \textbf{hệ số thưa} (compressed sensing).
     \quad
@@ -256,9 +307,7 @@
     {\footnotesize\textit{Pipeline Joint Sparse Representation}}
 \end{frame}
 
-\subsection{Salient Feature (Đặc trưng nổi bật)}
-
-\begin{frame}{2.5. Phương pháp Salient Feature}
+\begin{frame}{2.3.2. Phương pháp Salient Feature}
     \small
     \textbf{Đặc điểm:} Spatial domain, dùng \textbf{edge-preserving filters} tách base/detail layer đa thang.
     \quad
@@ -285,8 +334,9 @@
             \hline
             \textbf{Phương pháp} & \textbf{Đặc điểm nổi bật} \\ \hline
             Color Space  & Đơn giản, đẹp màu, không multi-scale. \\ \hline
-            Pyramid      & Đa độ phân giải, nhưng thiếu scale invariance. \\ \hline
-            Wavelet      & \textbf{Tốt nhất} nhờ scale invariance và directive filter. \\ \hline
+            Pyramid      & Đa độ phân giải, hạn chế bởi hiếu hiệu ứng khối. \\ \hline
+            Wavelet      & Bảo toàn thông tin, linh hoạt đa độ phân giải. \\ \hline
+            Geometric    & \textbf{Tốt nhất} cho đường cong, cạnh và contours. \\ \hline
             Sparse Rep.  & Biểu diễn thưa, chống nhiễu, từ điển học được. \\ \hline
             Salient Feat.& Spatial domain, giữ cạnh, nhanh, sát lâm sàng. \\ \hline
         \end{tabular}
@@ -471,8 +521,9 @@
     \textbf{Phần 2 -- Decomposition Methods:}
     \begin{itemize}
         \item \textbf{Color space:} Đơn giản, phù hợp pseudo-color, thiếu multi-scale.
-        \item \textbf{Pyramid \& Salient feature:} Mạnh về spatial + multi-scale.
-        \item \textbf{Wavelet (Shearlet/NSCT):} Chất lượng cao nhất nhờ scale invariance và directive filter.
+        \item \textbf{Pyramid:} Đa độ phân giải, gặp vấn đề blocking artifacts.
+        \item \textbf{Wavelet:} Multi-scale mạnh mẽ, tách tần số tốt.
+        \item \textbf{Geometric (Shearlet/NSCT):} \textbf{Chất lượng cao nhất} nhờ tối ưu biểu diễn cạnh và contours.
         \item \textbf{Sparse representation:} Biểu diễn thưa, chống nhiễu tốt.
     \end{itemize}
 

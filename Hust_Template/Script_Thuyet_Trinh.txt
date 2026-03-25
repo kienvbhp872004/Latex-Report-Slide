@@ -1,0 +1,130 @@
+BẢN THUYẾT TRÌNH LUXURY: CHIẾN LƯỢC TOÁN HỌC TRONG HỢP NHẤT ẢNH Y TẾ
+----------------------------------------------------------------------
+(Dành cho báo cáo chuyên sâu - Phân tích Bản chất Tín hiệu và Lý thuyết Thông tin)
+
+[SLIDE 1: TRANG TIÊU ĐỀ]
+Kính thưa Hội đồng và các bạn. Tôi là Đỗ Trung Kiên. Hôm nay, chúng ta không chỉ nói về việc "cộng" hai bức ảnh lại với nhau. Chúng ta sẽ cùng giải mã các mô hình toán học đằng sau việc tối ưu hóa lượng tin tín hiệu (signal information) trong chẩn đoán đa phương thức (multimodal diagnostics).
+
+[SLIDE 4: 5 PHƯƠNG PHÁP PHÂN TÍCH CHÍNH]
+Khi nhìn vào bảng so sánh này, hãy chú ý đến cột "Scale invariant" và "Dir. filter". 
+Trong xử lý tín hiệu gốc, thách thức lớn nhất là nguyên lý bất định (Uncertainty Principle) – ta không thể đồng thời tối ưu hóa độ phân giải thời gian và tần số. Wavelet và các biến thể như Shearlet chính là lời giải: Chúng tạo ra một cửa sổ quan sát động (vấn đề đa thang đo) giúp chúng ta "bắt" được các chi tiết ở cả mức độ vi mô (tế bào) và vĩ mô (cấu trúc mô).
+
+--- PHẦN 2: CHIẾN LƯỢC PHÂN TÍCH TÍN HIỆU ---
+
+[SLIDE 5, 8: PHƯƠNG PHÁP COLOR SPACE & CÔNG THỨC IHS]
+Công thức (1) và (2) không chỉ là toán học lượng giác, mà là một phép chiếu (projection).
+Chúng ta đang chiếu một không gian màu 3D (RGB) sang một không gian có biến độc lập về cường độ ($I$). Ý nghĩa cốt lõi ở đây là tách biệt hoàn toàn thông tin cảm nhận (Hue/Saturation) ra khỏi thông tin năng lượng tín hiệu (Intensity). 
+Trong hợp nhất ảnh, chúng ta coi $I$ là vật mang (carrier) của cấu trúc không gian. Bằng cách thay đổi $I$, ta thực chất đang thực hiện một phép "điều chế tín hiệu" (signal modulation), đưa thông tin có độ phân giải cao từ CT/MRI vào trong lớp vỏ màu sắc tự nhiên của ảnh gốc.
+
+[SLIDE 9: 2.2 PHƯƠNG PHÁP PYRAMID]
+Ở đây, chúng ta đang thực hiện phân tách dải thông (sub-band decomposition). 
+Công thức $p_i = F_i * I$ đại diện cho phép toán chập (convolution) với nhân Gauss. Điều này tương đương với việc lọc bỏ các tần số cao để giữ lại "cấu trúc xương" của ảnh. 
+Quan trọng là phép hiệu $r_i = I - p_i$ – đây chính là phần dư (residue), chứa đựng các thông tin cạnh và texture vốn dễ bị mất đi nếu chúng ta chỉ hợp nhất ở một thang đo duy nhất.
+
+[SLIDE 10, 11: 2.3 PHƯƠNG PHÁP WAVELET & NSCT]
+Đi sâu vào NSCT (Non-subsampled Contourlet Transform) – đây là một bước tiến vượt bậc. 
+Tại sao phải "Non-subsampled"? Vì trong xử lý ảnh, việc lấy mẫu xuống (downsampling) sẽ gây ra hiện tượng răng cưa (aliasing) và làm mất tính bất biến dịch chuyển (shift-invariance). 
+NSCT giải quyết triệt để lỗi Gibb (hiện tượng nhiễu vòng quanh các cạnh sắc). Với Shearlet, chúng ta sử dụng các ma trận biến đổi affine để "cắt" mặt phẳng tần số thành các hình nêm vô cùng nhỏ, cho phép định vị các đường cong y tế với độ chính xác toán học gần như tuyệt đối.
+
+[SLIDE 12: 2.4 PHƯƠNG PHÁP SPARSE REPRESENTATION (SR)]
+Đây là lĩnh vực của Nén cảm nhận (Compressed Sensing). 
+Công thức $V = DS$ là một bài toán tối ưu hóa $L_0/L_1$ norm. Bản chất của SR là giả định rằng tín hiệu tự nhiên có tính thưa (sparsity). 
+Tại sao ảnh y tế lại thưa? Vì các cấu trúc quan trọng chỉ chiếm một phần nhỏ không gian. Bằng cách "học" một từ điển $D$ chứa các đặc trưng bệnh lý bản địa, chúng ta có thể tái tạo ảnh với tỷ lệ tín hiệu trên nhiễu (SNR) cực cao. Khi hợp nhất, ta thực hiện Max-Absolute-Pooling trên các hệ số thưa $S$, đảm bảo chỉ những "nguyên tử" (atoms) mang năng lượng cao nhất mới được giữ lại.
+
+--- PHẦN 3: CHIẾN LƯỢC QUY TẮC HỢP NHẤT ---
+
+[SLIDE 16: 3.1 FUZZY LOGIC - ĐIỀU KHIỂN HÀM THUỘC]
+Công thức Gaussian (3) thực chất là một bộ lọc không gian phi tuyến. 
+Khác với logic nhị phân (0 hoặc 1), Logic mờ cho phép chúng ta làm việc với các vùng chuyển tiếp (transition zones). Trong chẩn đoán, một vùng ảnh có thể mang tính chất "nền" 30% và "chi tiết" 70%. 
+Chúng ta sử dụng mô hình Takagi-Sugeno thay vì Mamdani vì T-S cho phép đầu ra là một hàm tuyến tính của các biến đầu vào, giúp việc giải mờ (defuzzification) trở nên chính xác và mượt mà hơn, tránh hiện tượng giả tạo (artifacts) tại biên.
+
+[SLIDE 17, 18: 3.2 STATISTICS (PCA & HMT)]
+Với PCA, chúng ta đang thực hiện phép biến đổi Karhunen-Loève để trực giao hóa cơ sở dữ liệu. 
+Ma trận Covariance đo lường sự tương quan thông tin (redundancy). Phép tính trọng số dựa trên Eigenvalues giúp ta nén thông tin từ hai nguồn dữ liệu vào các thành phần chính (Principal Components) mang năng lượng lớn nhất.
+HMT (Hidden Markov Tree) lại đưa vào yếu tố xác suất có điều kiện. Nó mô hình hóa cấu trúc quad-tree của Wavelet, nơi các trạng thái ẩn (hidden states) đại diện cho mức độ nhiễu và độ nét, giúp bảo toàn tính nhất quán cục bộ (local consistency) mà các phương pháp pixel-wise thông thường không làm được.
+
+[SLIDE 19, 20: 3.3 HUMAN VISUAL SYSTEM & PCNN]
+Hãy nói về PCNN (Pulse-Coupled Neural Network). 
+Mỗi neuron tương ứng một pixel và chúng liên kết qua hệ số $L_{ij}$. Đây là cơ chế "Triggering": khi một neuron phát xung, nó sẽ kích thích các neuron lân cận có tính chất tương đồng cùng phát xung. 
+Kết quả là gì? Một sự phân đoạn động (dynamic segmentation). Thuật toán này không nhìn pixel như những con số rời rạc, mà nhìn chúng như những cấu trúc sinh học đồng bộ. Đây là cách mô phỏng thị giác con người chính xác nhất hiện nay để giữ lại các đặc trưng nhạy cảm với mắt bác sĩ.
+
+[SLIDE 21: 3.4 OBJECTIVE EVALUATION METRICS - LÝ THUYẾT THÔNG TIN]
+Bản chất của các chỉ số:
+- SF (Spatial Frequency) là căn bậc hai của tổng bình quân các đạo hàm riêng. Nó đo năng lượng của các thành phần tần số cao – trực tiếp tương quan với độ nét lâm sàng.
+- Mutual Information (MI) dựa trên Entropy liên hiệp (Joint Entropy). Nó đo lượng thông tin bị rò rỉ (leakage) từ ảnh gốc sang ảnh hợp nhất. 
+- Wavelet Entropy (WE) cho biết sự phân bố năng lượng trên các dải tần. Một hệ thống tốt phải duy trì được mức WE ổn định, không để năng lượng bị phân tán vào nhiễu.
+
+--- KẾT THÚC ---
+
+[SLIDE 22: TỔNG KẾT]
+Thưa Hội đồng, hợp nhất ảnh đa modal không còn là một bài toán xử lý ảnh đơn thuần. Nó là sự giao thoa giữa Lý thuyết thông tin, Hình học đa thang đo và Mô phỏng thần kinh. Việc thấu hiểu các công thức này chính là chìa khóa để chúng ta xây dựng những hệ thống hỗ trợ chẩn đoán (CAD) có độ tin cậy cao, phục vụ trực tiếp cho sức khỏe con người.
+
+[SLIDE 23: CẢM ƠN]
+Xin trân trọng cảm ơn sự chú ý của thầy và các bạn. Tôi rất mong nhận được những câu hỏi chuyên sâu về các mô hình toán học đã trình bày!
+
+======================================================================
+PHẦN TIẾP THEO: CHIẾN LƯỢC KHÔNG GIAN MÀU TRONG HỢP NHẤT ẢNH (SLIDE W3)
+======================================================================
+
+[SLIDE 1: TIÊU ĐỀ]
+Tiếp theo phần toán học về phân tích ảnh, chúng ta sẽ bước sang một khía cạnh cực kỳ thực tiễn nhưng lại mang tính quyết định đến chất lượng hiển thị lâm sàng: "Lý thuyết và Ứng dụng các Không gian màu". Tại sao chúng ta không dùng luôn RGB? Câu trả lời nằm ở bản chất của thị giác con người và cấu trúc dữ liệu y tế.
+
+[SLIDE 2: NỘI DUNG TRÌNH BÀY]
+Trong phần này, tôi sẽ phân tích 4 hệ màu chính là RGB, YUV, YCbCr và HSV. Chúng ta sẽ cùng xem tại sao giới nghiên cứu lại "ưu ái" YCbCr đến vậy.
+
+--- CHIẾN LƯỢC TÁCH BIỆT THÔNG TIN ---
+
+[SLIDE 3: 1. KHÔNG GIAN MÀU RGB]
+RGB là mô hình cộng tính (additive), dựa trên thuyết tam sắc (trichromatic theory). 
+Về mặt hình học, nó là một khối lập phương. Tuy nhiên, vấn đề lớn nhất của RGB trong xử lý ảnh y tế là tính **tương quan cao (high correlation)** giữa các kênh. 
+Khi bạn thay đổi độ sáng của một pixel, cả R, G và B đều thay đổi. Điều này khiến việc "trộn" thông tin từ hai nguồn ảnh khác nhau trở nên cực kỳ hỗn loạn, vì ta không thể tách biệt được đâu là thông tin cấu trúc và đâu là thông tin màu sắc.
+
+[SLIDE 4: TẠI SAO PHẢI CHUYỂN ĐỔI KHÔNG GIAN MÀU?]
+Trong y tế, chúng ta có một quy luật vàng: **Thông tin giải phẫu (Anatomy) nằm ở cường độ sáng (Intensity), còn thông tin chức năng (Function) nằm ở màu sắc (Color).** 
+Ví dụ, ảnh CT cho thấy xương rất rõ (độ sáng), còn PET cho thấy vùng tế bào đang hoạt động mạnh (màu đỏ rực). 
+Chiến lược Fusion chuẩn là: Phải tách "Sáng" ra một đường, "Màu" ra một đường. Chúng ta chỉ thực hiện các phép toán phức tạp trên kênh sáng để giữ độ nét, còn kênh màu ta chỉ cần "nhúng" vào ở bước cuối cùng.
+
+--- CƠ CHẾ YUV VÀ YCBCR ---
+
+[SLIDE 5: 2. KHÔNG GIAN MÀU YUV]
+YUV ra đời từ thời truyền hình màu. Công thức BT.601 ở đây có một điểm rất thú vị: 
+$Y = 0.299R + 0.587G + 0.114B$. 
+Tại sao hệ số cho màu Lục (Green) lại lớn nhất (0.587)? Đó là vì mắt con người nhạy cảm với ánh sáng xanh lá cây nhất. 
+Trong Fusion hiện đại, YUV ít được dùng trực tiếp vì nó là mô hình tương tự (analog), nhưng nó chính là nền tảng tư duy để chúng ta tiến tới YCbCr.
+
+[SLIDE 6: 3. KHÔNG GIAN MÀU YCBCR (QUAN TRỌNG NHẤT)]
+Đây chính là "Tiêu chuẩn vàng" (Gold Standard) trong các bài báo khoa học. YCbCr là phiên bản số hóa (digital) của YUV.
+Hãy nhìn vào ma trận chuyển đổi. Nó không chỉ là một phép nhân, mà còn bao gồm các giá trị offset (16 cho Y, 128 cho Cb, Cr) để đảm bảo tín hiệu nằm gọn trong dải 8-bit.
+- Kênh Y (Luminance) chứa toàn bộ các thành phần tần số cao (High-frequency): là nơi tập trung các cạnh (Edge) và vân bề mặt (Texture). 
+- Cb, Cr là các kênh màu (Chrominance). 
+Trong Fusion, kênh Y chính là "chiến trường" chính của các thuật toán Deep Learning.
+
+[SLIDE 7: QUY TRÌNH CHUẨN TRONG IMAGE FUSION]
+Dựa trên YCbCr, chúng ta có một Pipeline cực kỳ chuyên nghiệp:
+1. Đưa ảnh cấu trúc dày đặc (CT/MRI) vào làm "xương sống" cho kênh Y.
+2. Đưa ảnh màu chức năng (PET) vào Cb, Cr.
+3. Sử dụng các kỹ thuật như phân tích đa thang đo mà tôi đã nói ở phần trước (Wavelet, NSCT) chỉ cho kênh Y này.
+Khi đó, ảnh hợp nhất sẽ vừa có độ nét của CT, vừa có màu sắc rực rỡ của PET mà không bị bóng định giới (halo artifacts).
+
+[SLIDE 8: TỐI ƯU HÓA METRIC TRÊN KÊNH Y]
+Tại sao các Paper lại thích dùng YCbCr để đánh giá? 
+Bởi vì khi ta tính SSIM (Structural Similarity Index) trên kênh Y, kết quả sẽ phản ánh chính xác 100% cảm nhận của mắt người về độ sắc nét của xương và mô. 
+Thực tế, các thuật toán hiện đại như CNN hay Transformer hiện nay không "nhìn" toàn bộ ảnh màu, chúng chỉ tập trung tối ưu lượng tin (Entropy) trên kênh Y để tiết kiệm tài nguyên tính toán mà vẫn đạt hiệu quả tối đa.
+
+--- HỆ MÀU CẢNH BÁO ---
+
+[SLIDE 9: 4. KHÔNG GIAN MÀU HSY/HSV]
+Cuối cùng là HSV – hệ màu dựa trên tọa độ trụ. 
+Dù nó rất trực quan (chọn màu như chọn trên bảng vẽ), nhưng trong Fusion nó lại có một nhược điểm chí mạng: **Tính không tuyến tính (Non-linearity)**. 
+Tại các điểm có độ bão hòa bằng 0 (vùng ảnh xám), góc màu (Hue) sẽ bị bất định (singularity). Điều này khiến các thuật toán học máy rất dễ bị "sốc" và tạo ra các điểm ảnh màu sắc sai lệch hoàn toàn. Vì vậy, HSV thường chỉ dùng làm bước tiền xử lý để phân đoạn ảnh chứ ít khi dùng cho Fusion chính thức.
+
+--- KẾT THÚC VÀ TỔNG KẾT ---
+
+[SLIDE 11: SO SÁNH CÁC HỆ MÀU]
+Nhìn vào bảng tổng kết này, các bạn có thể thấy YCbCr thắng thế tuyệt đối về mọi mặt: từ khả năng tương thích với dữ liệu y tế cho đến việc dễ dàng áp dụng các chỉ số đánh giá khoa học.
+
+[SLIDE 12: KẾT LUẬN]
+Tôi muốn nhấn mạnh: Để có một nghiên cứu về Fusion đạt chuẩn công bố quốc tế, việc chọn đúng không gian màu YCbCr chính là bước đi thông minh nhất. Nó giúp ta tách biệt hoàn toàn giữa "Cấu trúc" và "Chức năng", từ đó tối ưu hóa được độ chính xác trong chẩn đoán hình ảnh.
+
+[SLIDE 13: CẢM ƠN]
+Xin cảm ơn thầy và các bạn đã lắng nghe phần trình bày về ứng dụng không gian màu của tôi. Rất mong nhận được các câu hỏi phản biện từ Hội đồng!

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.18)  18 MAR 2026 23:56
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.18)  23 MAR 2026 23:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1546,19 +1546,19 @@ thkerncmss.
 ]
 
 LaTeX Font Warning: Font shape `T5/cmss/m/it' in size <10> not available
-(Font)              Font shape `T5/cmss/m/sl' tried instead on input line 102.
+(Font)              Font shape `T5/cmss/m/sl' tried instead on input line 103.
 
-<../Slide/DATN/Week_3/Image_Decomposition/IHS-basedfusion.png, id=149, 857.4534
+<../Slide/DATN/Week_3/Image_Decomposition/IHS-basedfusion.png, id=155, 857.4534
 3pt x 507.39563pt>
 File: ../Slide/DATN/Week_3/Image_Decomposition/IHS-basedfusion.png Graphic file
  (type png)
 <use ../Slide/DATN/Week_3/Image_Decomposition/IHS-basedfusion.png>
 Package pdftex.def Info: ../Slide/DATN/Week_3/Image_Decomposition/IHS-basedfusi
-on.png  used on input line 102.
+on.png  used on input line 103.
 (pdftex.def)             Requested size: 184.3758pt x 109.10341pt.
 
 LaTeX Font Warning: Font shape `T5/cmss/m/it' in size <9> not available
-(Font)              Font shape `T5/cmss/m/sl' tried instead on input line 102.
+(Font)              Font shape `T5/cmss/m/sl' tried instead on input line 103.
 
 [5
 
@@ -1569,84 +1569,74 @@ LaTeX Font Warning: Font shape `T5/cmss/m/it' in size <9> not available
 ]
 [8
 
-]
-<../Slide/DATN/Week_3/Image_Decomposition/three-levels pyramid.png, id=182, 859
-.71187pt x 365.86688pt>
-File: ../Slide/DATN/Week_3/Image_Decomposition/three-levels pyramid.png Graphic
- file (type png)
-<use ../Slide/DATN/Week_3/Image_Decomposition/three-levels pyramid.png>
-Package pdftex.def Info: ../Slide/DATN/Week_3/Image_Decomposition/three-levels 
-pyramid.png  used on input line 174.
-(pdftex.def)             Requested size: 304.65544pt x 129.65196pt.
- [9
+] [9
 
- <../Slide/DATN/Week_3/Image_Decomposition/three-levels pyramid.png>]
-<../Slide/DATN/Week_3/Image_Decomposition/wavelet.png, id=188, 671.50874pt x 63
-6.3775pt>
-File: ../Slide/DATN/Week_3/Image_Decomposition/wavelet.png Graphic file (type p
-ng)
-<use ../Slide/DATN/Week_3/Image_Decomposition/wavelet.png>
-Package pdftex.def Info: ../Slide/DATN/Week_3/Image_Decomposition/wavelet.png  
-used on input line 202.
-(pdftex.def)             Requested size: 162.25159pt x 153.76302pt.
+] [10
 
-[10
+] [11
 
- <../Slide/DATN/Week_3/Image_Decomposition/wavelet.png (PNG copy)>] [11
+] [12
+
+] [13
+
+] [14
 
 ]
-<../Slide/DATN/Week_3/Image_Decomposition/jointsparserepresentation.png, id=198
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `alignment tab' on input line 289.
+
+<../Slide/DATN/Week_3/Image_Decomposition/jointsparserepresentation.png, id=218
 , 1122.44344pt x 385.44pt>
 File: ../Slide/DATN/Week_3/Image_Decomposition/jointsparserepresentation.png Gr
 aphic file (type png)
 <use ../Slide/DATN/Week_3/Image_Decomposition/jointsparserepresentation.png>
 Package pdftex.def Info: ../Slide/DATN/Week_3/Image_Decomposition/jointsparsere
-presentation.png  used on input line 257.
+presentation.png  used on input line 308.
 (pdftex.def)             Requested size: 307.27704pt x 105.517pt.
-
-[12
+[15
 
  <../Slide/DATN/Week_3/Image_Decomposition/jointsparserepresentation.png>]
-<../Slide/DATN/Week_3/Image_Decomposition/edge-preservingfilter.png, id=204, 11
+<../Slide/DATN/Week_3/Image_Decomposition/edge-preservingfilter.png, id=225, 11
 26.2075pt x 453.94594pt>
 File: ../Slide/DATN/Week_3/Image_Decomposition/edge-preservingfilter.png Graphi
 c file (type png)
 <use ../Slide/DATN/Week_3/Image_Decomposition/edge-preservingfilter.png>
 Package pdftex.def Info: ../Slide/DATN/Week_3/Image_Decomposition/edge-preservi
-ngfilter.png  used on input line 277.
+ngfilter.png  used on input line 326.
 (pdftex.def)             Requested size: 307.2936pt x 123.86232pt.
 
-[13
+[16
 
  <../Slide/DATN/Week_3/Image_Decomposition/edge-preservingfilter.png>]
-[14
+[17
 
-] [15
+] [18
 
 ]
 
 LaTeX Font Warning: Font shape `T5/cmss/m/it' in size <10.95> not available
-(Font)              Font shape `T5/cmss/m/sl' tried instead on input line 348.
+(Font)              Font shape `T5/cmss/m/sl' tried instead on input line 398.
 
-[16
-
-] [17
-
-] [18
-
-] [19
+[19
 
 ] [20
 
 ] [21
 
-]
-Overfull \vbox (6.08896pt too high) detected at line 491
- []
-
-[22
+] [22
 
 ] [23
+
+] [24
+
+]
+Overfull \vbox (19.68896pt too high) detected at line 542
+ []
+
+[25
+
+] [26
 
 ]
 \tf@nav=\write6
@@ -1663,45 +1653,86 @@ Overfull \vbox (6.08896pt too high) detected at line 491
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
-Package rerunfilecheck Info: File `Decompositon_Fusion_Rule.out' has not change
-d.
-(rerunfilecheck)             Checksum: B8808E0A93C7093B66BA3420B58791ED;2634.
+
+
+Package rerunfilecheck Warning: File `Decompositon_Fusion_Rule.out' has changed
+.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `Decompositon_Fusion_Rule.out':
+(rerunfilecheck)             Before: B58DBB7650F3AB37E96272CCF5D9DC1E;2913
+(rerunfilecheck)             After:  CD515A0345CB1298D1ADE3FF0252714F;2568.
  ) 
 Here is how much of TeX's memory you used:
- 28382 strings out of 467871
- 562168 string characters out of 5418376
- 943345 words of memory out of 5000000
- 56556 multiletter control sequences out of 15000+600000
+ 28441 strings out of 467871
+ 563227 string characters out of 5418376
+ 944345 words of memory out of 5000000
+ 56603 multiletter control sequences out of 15000+600000
  676558 words of font info for 145 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 128i,20n,123p,401b,749s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Users/admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/
-cmex10.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
-fonts/cm/cmmi10.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeX/fonts/type1/p
-ublic/amsfonts/cm/cmmi6.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeX/fonts
-/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/admin/AppData/Local/Programs/MiKT
-eX/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Users/admin/AppData/Local/Prog
-rams/MiKTeX/fonts/type1/public/amsfonts/cm/cmss12.pfb><C:/Users/admin/AppData/L
-ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:/Users/admin/A
-ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmssi10.pfb><C:/Use
-rs/admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmssi12.p
-fb><C:/Users/admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm
-/cmssi8.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/am
-sfonts/cm/cmssi9.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeX/fonts/type1/
-public/amsfonts/cm/cmsy10.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeX/fon
-ts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/admin/AppData/Local/Programs/Mi
-KTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/admin/AppData/Local/Pro
-grams/MiKTeX/fonts/type1/public/amsfonts/symbols/msam10.pfb><C:/Users/admin/App
-Data/Local/Programs/MiKTeX/fonts/type1/vntex/vnr/vnss10.pfb><C:/Users/admin/App
-Data/Local/Programs/MiKTeX/fonts/type1/vntex/vnr/vnss12.pfb><C:/Users/admin/App
-Data/Local/Programs/MiKTeX/fonts/type1/vntex/vnr/vnss8.pfb><C:/Users/admin/AppD
-ata/Local/Programs/MiKTeX/fonts/type1/vntex/vnr/vnss9.pfb><C:/Users/admin/AppDa
-ta/Local/Programs/MiKTeX/fonts/type1/vntex/vnr/vnssbx10.pfb><C:/Users/admin/App
-Data/Local/Programs/MiKTeX/fonts/type1/vntex/vnr/vnssi10.pfb><C:/Users/admin/Ap
-pData/Local/Programs/MiKTeX/fonts/type1/vntex/vnr/vnssi9.pfb>
-Output written on Decompositon_Fusion_Rule.pdf (23 pages, 732574 bytes).
+ 128i,20n,123p,401b,745s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+pdfTeX warning (dest): name{Outline0.3.4.23} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{Outline0.3.3.21} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{Outline0.3.2.19} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{Outline0.3.1.18} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{Outline0.2.6.15} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{Outline0.2.5.14} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{Outline0.2.4.11} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{Outline0.2.3.10} has been referenced but does not e
+xist, replaced by a fixed one
+
+<C:/Users/admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cm
+ex10.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
+nts/cm/cmmi10.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeX/fonts/type1/pub
+lic/amsfonts/cm/cmmi6.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeX/fonts/t
+ype1/public/amsfonts/cm/cmmi7.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeX
+/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/admin/AppData/Local/Program
+s/MiKTeX/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Users/admin/AppData/Loca
+l/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss12.pfb><C:/Users/admin/App
+Data/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:/Users/a
+dmin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmssi10.pfb><
+C:/Users/admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cms
+si12.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
+nts/cm/cmssi8.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeX/fonts/type1/pub
+lic/amsfonts/cm/cmssi9.pfb><C:/Users/admin/AppData/Local/Programs/MiKTeX/fonts/
+type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/admin/AppData/Local/Programs/MiKT
+eX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/admin/AppData/Local/Progr
+ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/admin/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/admin/App
+Data/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msam10.pfb><C:/U
+sers/admin/AppData/Local/Programs/MiKTeX/fonts/type1/vntex/vnr/vnss10.pfb><C:/U
+sers/admin/AppData/Local/Programs/MiKTeX/fonts/type1/vntex/vnr/vnss12.pfb><C:/U
+sers/admin/AppData/Local/Programs/MiKTeX/fonts/type1/vntex/vnr/vnss8.pfb><C:/Us
+ers/admin/AppData/Local/Programs/MiKTeX/fonts/type1/vntex/vnr/vnss9.pfb><C:/Use
+rs/admin/AppData/Local/Programs/MiKTeX/fonts/type1/vntex/vnr/vnssbx10.pfb><C:/U
+sers/admin/AppData/Local/Programs/MiKTeX/fonts/type1/vntex/vnr/vnssi10.pfb><C:/
+Users/admin/AppData/Local/Programs/MiKTeX/fonts/type1/vntex/vnr/vnssi9.pfb>
+Output written on Decompositon_Fusion_Rule.pdf (26 pages, 687512 bytes).
 PDF statistics:
- 366 PDF objects out of 1000 (max. 8388607)
- 60 named destinations out of 1000 (max. 500000)
- 308 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 401 PDF objects out of 1000 (max. 8388607)
+ 72 named destinations out of 1000 (max. 500000)
+ 306 words of extra memory for PDF output out of 10000 (max. 10000000)
 

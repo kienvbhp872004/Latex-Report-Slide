@@ -1,292 +1,400 @@
-2. Tổng quan về phân tích và tái tạo hình ảnh trong hợp nhất hình ảnh y tế đa modal
-Trong hợp nhất hình ảnh y tế đa modal (multi-modal medical image fusion), quá trình phân tích (decomposition) và tái tạo (reconstruction) là yếu tố quyết định chất lượng của hình ảnh hợp nhất. Mục tiêu chính là:
-
-Phân tích hình ảnh gốc thành một chuỗi các thành phần con (các hình ảnh con ở các miền không gian, tần số, thang độ, hoặc đặc trưng).
-Sau đó kết hợp (fuse) các thành phần này theo quy tắc phù hợp.
-Cuối cùng tái tạo lại thành một hình ảnh hợp nhất duy nhất, giữ được thông tin từ tất cả các modal (ví dụ: MRI + CT, PET + MRI…).
-
-Có 5 phương pháp chính được quan tâm:
-
-Color space (không gian màu)
-Pyramid (kim tự tháp)
-Wavelet (biến đổi wavelet)
-Sparse representation (biểu diễn thưa)
-Salient feature (đặc trưng nổi bật)
-
-Bảng so sánh 5 phương pháp (dựa trên Table 1 trong tài liệu):
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Phương phápSpatial domainFrequency domainMulti-scaleScale invarianceDictionaryDirective filterColor spaceYesNoNoNoNoNoPyramidNoYesYesNoNoNoWaveletNoYesYesYesNoYesSparse representationYesYesNoNoYesNoSalient featureYesNoYesYesNoNo
-Đặc điểm chung:
-
-Vì hình ảnh y tế thường là pseudo-color, color space là lựa chọn tự nhiên.
-Các phương pháp còn lại (trừ color space) chủ yếu dùng Multi-scale Decomposition (MSD) để trích xuất và kết hợp đặc trưng nổi bật ở nhiều thang độ khác nhau.
-Wavelet nổi bật nhờ scale invariance và directive filter.
-Salient feature hoạt động hoàn toàn trong spatial domain nhưng vẫn đạt được MSD.
-Sparse representation lấy cảm hứng từ compressed sensing, xây dựng từ điển (dictionary) chung cho các hình ảnh đầu vào.
-
-Hình 2 trong tài liệu tóm tắt 3 giai đoạn chính của toàn bộ quy trình hợp nhất: Image Decomposition → Image Fusion Rules → Image Reconstruction, kèm các chỉ số đánh giá chất lượng (MI, PSNR, SSIM…).
-2.1. Color space methods (Phương pháp không gian màu)
-Phương pháp phổ biến nhất là IHS (Intensity-Hue-Saturation) – cho ra hình ảnh chất lượng cao, màu sắc đẹp và tự nhiên (xem Fig. 3).
-Quy trình:
-
-Chuyển 2 hình ảnh đầu vào (I₁, I₂) từ RGB sang IHS:$$I = \frac{R + G + B}{3}$$$$H = 
-\begin{cases}
-\theta & \text{if } B \leq G \\
-360^\circ - \theta & \text{if } B > G
-\end{cases}, \quad
-\theta = \cos^{-1}\left(\frac{(R-G) + (R-B)}{2\sqrt{(R-G)^2 + (R-B)(G-B)}}\right)$$$$S = 1 - \frac{3 \min(R,G,B)}{R+G+B}$$
-Áp dụng quy tắc hợp nhất (thường giữ Intensity của một ảnh, Hue/Saturation của ảnh kia hoặc kết hợp).
-Chuyển ngược IHS sang RGB để được ảnh hợp nhất IF:$$\begin{cases}
-R = I + S \cdot \cos(H) \\
-G = I + S \cdot \cos(120^\circ - H) \\
-B = I + S \cdot \cos(240^\circ - H)
-\end{cases}$$(có các biến thể điều chỉnh theo điều kiện R, G, B lớn nhất).
-
-Ưu điểm: Đơn giản, giữ được màu sắc đẹp, phù hợp với ảnh y tế pseudo-color.
-Nhược điểm: Không có multi-scale, dễ mất thông tin tần số cao.
-2.2. Pyramid methods (Phương pháp kim tự tháp)
-Sử dụng biểu diễn đa độ phân giải (diverse resolutions) – rất phổ biến trong hợp nhất hình ảnh y tế (Fig. 4).
-Quy trình:
-
-Xây dựng kim tự tháp cho từng ảnh đầu vào:$$p_i = F_i * I, \quad r_i = I - p_i$$(ri là residual image, Fi là bộ lọc down-sampling, i = 1…max_level).
-Hợp nhất các mức kim tự tháp (thường lấy max hoặc weighted average ở mỗi mức).
-Tái tạo bằng tổng các residual + mức thấp nhất:$$I_F = \sum_{i=1}^{\text{max\_level}} r_i + p_{\text{max\_level}}$$
-
-Ưu điểm: Đơn giản, multi-scale.
-Nhược điểm: Không có scale invariance, không directive filter.
-2.3. Wavelet transformation based methods (Phương pháp dựa trên wavelet)
-Đây là nhóm mạnh nhất nhờ tính multi-scale, scale invariance và directive filter (Fig. 5).
-Các biến thể chính:
-
-DWT (Discrete Wavelet Transform): phân tích thành 1 low-frequency + 3 high-frequency (horizontal, vertical, diagonal). Nhược điểm: không shift-invariant.
-RDWT (Redundant DWT): loại bỏ down-sampling → giữ shift-invariance.
-MWT (Multi-wavelet): giữ nhiều chi tiết texture hơn.
-LWT (Lifting Wavelet Transform): 3 giai đoạn Split → Predict → Update, giảm độ phức tạp tính toán.
-Contourlet (CT): kết hợp pyramid + directional filter banks → bắt contour tốt hơn wavelet.
-NSCT (Non-subsampled Contourlet): không sub-sampling → shift-invariant.
-Shearlet (ST): số hướng vô hạn, sparse directional representation tốt nhất. Có cả 3D Shearlet cho chuỗi ảnh.
-
-Bảng so sánh một mức phân tích (Table 2):
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Phương phápLow-frequency bandHigh-frequency bandWavelet13 (finite)Contourlet1nhiều hơn waveletShearlet1vô hạn (controlled by parameter)
-Ưu điểm: Scale invariance, directive filter, giữ chi tiết cạnh và texture rất tốt.
-Nhược điểm: Phức tạp tính toán cao hơn pyramid.
-2.4. Sparse representation methods (Phương pháp biểu diễn thưa)
-Dựa trên giả thuyết: các thành phần tần số cao/thấp của các ảnh đầu vào chia sẻ cùng tập hệ số thưa (sparse coefficients). Lấy cảm hứng từ compressed sensing (Fig. 6).
-Quy trình JSP (Joint Sparse Representation):
-
-Chuyển ảnh I₁, I₂ thành vector bằng sliding window: V = [V_C, V_U] (C = common, U = unique).
-Biểu diễn thưa bằng từ điển quá hoàn chỉnh D:$$V_C = D S_C, \quad V_U = D S_U$$
-Hợp nhất hệ số thưa:$$S_F = f(S_C, S_U)$$
-Tái tạo vector hợp nhất:$$V_F = D S_F$$
-Ghép các vector lại thành ảnh IF.
-
-Biến thể: Group Sparse Representation (GSP).
-Ưu điểm: Giữ được cấu trúc chung, chống nhiễu tốt.
-Nhược điểm: Phụ thuộc chất lượng từ điển, tính toán nặng.
-2.5. Salient feature methods (Phương pháp đặc trưng nổi bật)
-Khác biệt hoàn toàn: hoạt động thuần túy trong spatial domain, giữ shift-invariance, salient features và độ phức tạp thấp (Fig. 7).
-Sử dụng edge-preserving filters (bộ lọc giữ cạnh) để phân tích đa thang.
-Quy trình:
-
-Phân tích base layer (nền) và detail layer (chi tiết) ở từng mức i:$$B_i = I * F_i \quad \text{(base layer)}$$$$D_i = I - B_i \quad \text{(detail layer)}$$(Fi là edge-preserving filter: bilateral, guided filter, local extrema…).
-Hợp nhất base và detail riêng biệt:$$B_F = f_B(B_1, B_2), \quad D_F = f_D(D_1, D_2)$$
-Tái tạo:$$I_F = B_F + D_F$$
-
-Ưu điểm: Giữ cạnh sắc nét, shift-invariant, tốc độ nhanh, phù hợp thực tế lâm sàng.
-Nhược điểm: Không có frequency domain hay dictionary.
-Kết luận phần này
-
-Color space đơn giản nhưng hạn chế multi-scale.
-Pyramid và Salient feature mạnh về spatial + multi-scale.
-Wavelet (đặc biệt Shearlet/NSCT) là lựa chọn tối ưu cho chất lượng cao nhờ scale invariance và directive filter.
-Sparse representation phù hợp khi cần biểu diễn thưa và chống nhiễu.
-
-3. Tổng quan về Image Fusion Rules
-Image fusion rules là các thuật toán quyết định cách kết hợp thông tin từ nhiều hình ảnh gốc thành một hình ảnh hợp nhất duy nhất, nhằm làm nổi bật đặc trưng quan trọng (features of interest) và kìm hãm đặc trưng không quan trọng (insignificant features).
-Theo tài liệu [2], một quy tắc hợp nhất điển hình gồm 4 thành phần chính (xem Fig. 8):
-
-Activity-level measurement (Đo lường mức độ hoạt động/saliency của hệ số).
-Coefficient grouping (Nhóm hệ số).
-Coefficient combination (Kết hợp hệ số).
-Consistency verification (Xác nhận tính nhất quán trong vùng lân cận).
-
-Các quy tắc này được triển khai ở 3 mức độ:
-
-Pixel level: Dựa trực tiếp vào giá trị pixel.
-Feature level: Dựa vào vùng/đặc trưng (saliency, visibility, texture...).
-Decision level: Dựa trên thống kê, fuzzy logic, machine learning.
-
-Trong hợp nhất hình ảnh y tế đa modal, 5 lớp quy tắc chính được giới thiệu:
-3.1. Fuzzy logic (Logic mờ)
-Thuộc decision level, dùng để xử lý vấn đề hình ảnh hợp nhất bị mờ (blurry).
-Hai mô hình chính:
-
-Mamdani (cổ điển).
-Takagi-Sugeno (T-S): chính xác hơn, tránh bước defuzzification phức tạp.
-
-Quy trình điển hình:
-
-Trích xuất đặc trưng C₁, C₂ từ hai ảnh đầu vào.
-Áp dụng luật IF-THEN (ví dụ):
-R1: IF C₁ high AND C₂ high THEN Cw high
-R2: IF C₁ low AND C₂ high THEN Cw medium
-R3: IF C₁ high AND C₂ low THEN Cw medium
-R4: IF C₁ low AND C₂ low THEN Cw low
-
-Tính hàm thuộc (membership function) dạng Gaussian:$$\mu_{w_i}(y) = e^{-\frac{(y - \mu_i)^2}{2\sigma_i^2}}, \quad i=1,2,3 \quad (\text{high, medium, low})$$
-Defuzzification bằng center average để được trọng số cuối cùng cho pixel.
-
-Ưu điểm: Xử lý tốt sự không chắc chắn, mờ trong dữ liệu y tế.
-Nhược điểm: Phụ thuộc vào thiết kế luật và membership function.
-3.2. Statistics (Thống kê)
-Dựa trên kỹ thuật data-driven và higher-order statistics để lộ ra cấu trúc saliency ẩn.
-Hai ví dụ chính:
-
-Principal Component Analysis (PCA) [28–30]:
-Dùng làm công cụ giảm chiều, tạo trọng số từ thành phần chính.
-Quy trình:
-Vector hóa hệ số C₁, C₂:$$C_1 = [x_{1,1}, x_{1,2}, \dots, x_{1,N}]^T, \quad C_2 = [x_{2,1}, x_{2,2}, \dots, x_{2,N}]^T$$
-Ma trận hiệp phương sai:$$\text{Cov}(C_1, C_2) = E[(C_1 - \mu_1)(C_2 - \mu_2)^T]$$với $  \mu_1 = \frac{1}{N} \sum x_{1,i}  $, $  \mu_2 = \frac{1}{N} \sum x_{2,i}  $.
-Tính trọng số từ eigenvalues V của Cov:$$w_1 = \frac{V_{1,1}}{V_{1,1} + V_{2,1}}, \quad w_2 = \frac{V_{2,1}}{V_{1,1} + V_{2,1}}$$
-Hệ số hợp nhất:$$C_F = w_1 C_1 + w_2 C_2$$
-
-
-Hidden Markov Tree (HMT) [31,32]:
-Mô hình hóa hệ số bằng mixture of two Gaussians (hai trạng thái ẩn: 0 và 1).
-Sử dụng quad-tree: parent (PC), neighbor (NC), co-located child (CC).
-Xác suất chuyển trạng thái:$$P = \begin{bmatrix} p_{11} & p_{12} \\ p_{21} & p_{22} \end{bmatrix}$$
-Mật độ xác suất:$$f(C_i | S_i = m) \quad (m=0,1)$$
-Hợp nhất: chọn hệ số có xác suất cao hơn hoặc max:$$C_F = 
-\begin{cases} 
-C_1 & \text{if } C_1 \geq C_2 \\
-C_2 & \text{otherwise}
-\end{cases}$$
-
-
-Ưu điểm: PCA đơn giản, HMT giữ cấu trúc không gian tốt.
-Nhược điểm: PCA có thể mất thông tin phi tuyến.
-3.3. Human Visual System (HVS – Hệ thống thị giác con người)
-Mô phỏng quá trình nhận thức hình ảnh của con người, tập trung vào cạnh, góc, saliency.
-Các phương pháp:
-
-Visibility [30,33]: Đo độ sắc nét (sharpness), chọn max visibility.$$V(x,y) = \sum_{m,n} \frac{|I(x,y) - \mu|}{\mu^\alpha}$$(α ≈ 0.6–0.7).
-SUSAN (Smallest Univalue Segment Assimilating Nucleus) [33]: Trích xuất đặc trưng dựa trên vùng đồng nhất cường độ quanh pixel.$$n(r_o) = \sum \exp\left( -\frac{(r - r_o)^2}{2\eta^2} \right) \exp\left( -\frac{(F(r) - F(r_o))^2}{T^2} \right)$$(T: ngưỡng, η: scale).
-Artificial Neural Networks (ANN):
-Mapping Neural Network (MNN) [34]: Multi-level fusion.
-Pulse Coupled Neural Network (PCNN) [35–37]: Phổ biến cho WT-based fusion.
-Mô phỏng xung đồng bộ ở vỏ não thị giác mèo.
-Mỗi pixel tương ứng một neuron: linking + feeding → internal activity → threshold → pulse output.
-Dùng để fuse low/high frequency bands.
-
-
-Retina-Inspired Model (RIM) [4,38,39]: Dùng cho IHS decomposition.
-5 lớp: cone photoreceptors → spatial feature extractor → horizontal cells → bipolar → ganglion.
-Hợp nhất:$$C_F = f_1 C_1 + f_2 C_2$$(f₁: high-scale extractor, f₂: horizontal cells output).
-Có phiên bản multi-scale RIM [39].
-
-
-Ưu điểm: Giữ được đặc trưng mà mắt người nhạy cảm (cạnh, texture).
-Nhược điểm: PCNN phức tạp tính toán.
-3.4. Objective evaluation metrics (Chỉ số đánh giá khách quan)
-Dùng làm feedback để cải thiện quy tắc hợp nhất (tối ưu hóa chất lượng).
-Các metric phổ biến:
-
-Spatial Frequency (SF) [3]: Đo hoạt động hình ảnh.$$SF = \sqrt{RF^2 + CF^2}$$(RF: row frequency, CF: column frequency).
-Ratio of Spatial Frequency Error (rSFe) [40]: So sánh SF của fused vs input.$$rSFe = \frac{|SF_F - SF_1|/SF_1 + |SF_F - SF_2|/SF_2}{2}$$(SF mở rộng thêm MDF, SDF).
-Wavelet Entropy (WE) [41]: Entropy đa thang dựa trên Shannon.$$WE = -\sum_j p_j \ln p_j, \quad p_j = E_j / E_{tot}$$
-Directive Contrast (DC) [42]: Tỷ lệ high/low frequency.$$DC(x,y) = I_H(x,y) / I_L(x,y)$$
-Signal-to-Noise Ratio (SNR) [43]: Dùng để chống méo.$$A_k = \sum p_l, \quad p_l = w \cdot n \cdot d_{j,i_1,i_2}$$
-Mutual Information (MI) [44]: Tối đa hóa thông tin chung giữa input và fused.$$MI(I_1, I_F) + MI(I_2, I_F)$$
-
-Ưu điểm: Định lượng, khách quan, dùng làm tiêu chí tối ưu.
-Nhược điểm: Không phải lúc nào cũng tương quan hoàn hảo với nhận thức con người.
-Kết luận phần này
-
-Fuzzy logic và HVS-based (PCNN, RIM) mạnh ở decision/feature level, phù hợp xử lý không chắc chắn và đặc trưng thị giác.
-Statistics (PCA, HMT) đơn giản, hiệu quả cho saliency ẩn.
-Objective metrics đóng vai trò feedback quan trọng để đánh giá và cải tiến quy tắc.
-
-Các quy tắc này thường kết hợp với decomposition (phần 2) để tạo hệ thống fusion hoàn chỉnh. Nếu bạn cần code minh họa (ví dụ: PCNN trong Python với OpenCV/pywt), ví dụ thực tế trên ảnh MRI+PET, hoặc so sánh sâu hơn giữa các metric, hãy cho tôi biết nhé!
+3.1. Multi-scale decomposition based methods 
+In the transform domain, the typical flow diagram of image fu- 
+sion based on multi-scale decomposition (MSD) is illustrated in 
+Fig. 3 . Source images are first decomposed into multi-scale co- 
+efficients using a decomposition transform, then coefficients are 
+merged according to some fusion rules, and finally the inverse of 
+the transform is applied to reconstruct the fused image [38] . It is 
+important to notice that the multi-scale scheme can be extended 
+to more source images. Hence, advantageous MSD properties made 
+them a revolutionary tools due to their ability to extract spatial 
+structures over different scales. Mainly, the main strength lies in 
+the fusion strategy which depends on the activity level measure- 
+ment of coefficients, the consistency verification, the correlation of 
+adjacent pixels and the coefficient grouping strategy [39] . 
+3.1.1. Pyramid transform 
+In the early eighties, the notion of scales was introduced before 
+the emergence of wavelets , aiming to localize objects in the image. 
+One of the most primitively employed MSD tools was the pyra- 
+midal transforms. Hereby, the decomposition process consists of 
+successive filtering and down sampling steps, resulting in a set of 
+band-pass and low-pass copies of the image that imitate the pyra- 
+mid structure. Low frequencies are concentrated in higher levels 
+[40] . Decomposition ( Eq. 1 ) and reconstruction ( Eq. (2) ) are given 
+as follows: 
+R i = F i ∗P i ;P i + 1 = P i −R i ;i = 1 , . . . , L , P 1 = I 
+L  
+I rec = P L + 1 + 
+i = 1 
+R i 
+(1) 
+(2) 
+Where R i denotes the residual image at level i , F i stands for the 
+down-sampling filter, L is the number of decomposition levels, P i is 
+the pyramid representation of input image I at level i and I rec de- 
+notes the reconstructed image [3] . According to the filter type, the 
+most popular pyramidal decomposition methods adopted in MMIF 
+include Laplacian pyramids [11] , gradient pyramids [16] , mor- 
+phological pyramids [41] , steerable pyramids [42] , ratio pyramids 
+[38] , etc. Notwithstanding, theses methods are non-orientation, en- 
+counter problems with noisy images, and cause blocking effects. 
+Hence, contrast pyramid can not preserve salient information. Mor- 
+phological pyramid is not efficient in edge presentation, while gra- 
+dient pyramid join undesirable artifacts [43] . In the spatial domain, 
+Shuaiqi et al [44] proposed a pixel-level fusion algorithm based on 
+improved sum-modified-Laplacian (ISML) to overcome the blocking 
+effects and artifacts. Anatomical and Functional images are pro- 
+cessed with local Laplacian filtering, then sub-images were fused 
+by maximizing the local energy [45] . To summarize, all pyramid 
+based methods suffer from blocking artifacts and furnish undesired 
+edges. The following transforms have investigated these shortcom- 
+ings. 
+3.1.2. Wavelet transform 
+The first wavelets was developed in 1909 by Alfred Haar , and 
+has surpassed the limitation of time-frequency localization. Ini- 
+tially, it has been presented as optimal tools to analyze one- 
+dimensional signals in 1980, then moved towards 2-D image repre- 
+sentations. Mallat et al. [46] reported that properties of the wavelet 
+transform (WT) are suitable for particular signal processing appli- 
+cations such as compression. Particularly, it has been found effi- 
+cient in extracting information details from one image to inject it 
+into another based on additions, substitutions or selection strate- 
+gies [47] . Often, WT is an extension of the high pass filtering 
+idea, and are typically based on functions that are localized in 
+both frequency and space. It can be described as a combination of 
+two groups of functions; wavelet functions and scaling functions. 
+Hence, the wavelet functions are called the mother wavelets. Trans- 
+formations of the mother are termed the daughter wavelets which 
+should be scaled and translated [47] . A normalization factor is also 
+applied to the daughter wavelet which can ψ can be defined by: 
+ψ a,b (x ) = a −1 
+2 
+ψ 
+x −b 
+a 
+(3) 
+5 
+H. Hermessi, O. Mourali and E. Zagrouba 
+Signal Processing 183 (2021) 108036 
+Where x = (x 1 , x 2 ) ∈ R 2 refers to spatial coordinates of a given 
+pixel x . Commonly, a > 0 , b ∈ R , a stands for dyadic scaling. j ∈ Z 
+refers to scales. b stands for the translation factor, and k ∈ N r efers 
+to three (diagonal, vertical and horizontal) supported directions 
+[47,48] . The common choice in Eq. (3) is given by a = 2 −j and 
+b = 2 −j k . 
+The discrete W T (DW T), with capabilities in capturing location 
+as well as frequency information, is able to better separate high 
+frequencies from low frequencies, but lacks of shift-invariance due 
+the down sampling process [49] . The state of the art in MMIF 
+based on wavelets was chronologically reviewed in well-ranked 
+journals [3,9,47,50] . Pajares et al. [50] reviewed image fusion in 
+the wavelet domain and cited three reasons behind its appropri- 
+ateness; (1) DWT preserves information through image decomposi- 
+tion, (2) coefficients can be appropriately combined to obtain new 
+ones that best collect the original information, and (3) it is well 
+suited to manage different image resolutions. However, wavelets 
+show its drawbacks while representing higher number of direc- 
+tional features. It was proven deficient of shift invariance prop- 
+erty, along with inability to efficiently represent anisotropic fea- 
+tures and sharp transitions like edges [39] . DWT was proposed to 
+merge different combinations of multi-modalities such as MRI/CT 
+[51] , PET/CT [52] and PET/MRI [13] , etc. 
+The first wavelet based image fusion schemes appeared in mid 
+nineties to outperform pyramid based methods. The dual tree com- 
+plex wavelet transform (DTCWT), nearly shift-invariant and less 
+aliasing, has extended the direction support to six [24] . The non- 
+subsampled DTCWT has enhanced the phase information, shift- 
+invariance and multi-scalability in [19] . The sift-invariance prop- 
+erty of the redundant DWT (RDWT) has also provided better fusion 
+results in [53] . Furthermore, several extensions of WT were suc- 
+cessfully applied MMIF such as, the lifting WT [36] , multi-wavelet 
+transform (MWT) which provides more texture information [18] , 
+Daubechies complex W T (DCW T) [54] , stationary W T (SW T) [14] , 
+morphological wavelet [55] . The Quaternion wavelet transform 
+(QWT) has some merits over WT and DCWT through its shift in- 
+variant magnitude better for textural information, and its richer 
+geometric information given by its phase [56] . Meanwhile, the fu- 
+sion process in the wavelet domain can occur in the pixel level and 
+also in the mid-level by merging directional features [57] . Recent 
+works proposed different combinations to take benefits from dif- 
+ferent transforms, including but not limited to, wavelet-contourlet 
+[14] , wavelet-curvelet [58] and wavelet-ripplet [59] and wavelet- 
+shearlet [60] . The main objective behind these hybrid combinations 
+is to overcome limitations of wavelets by selecting more salient di- 
+rectional features. In the decision level, DWT has been adopted to- 
+gether with self-organizing neural networks as a fusion rule [61] . 
+Several feature and decision fusion schemes gave rise to hybrid 
+approaches for instance; wavelet/SVM [62] , wavelet/independent 
+component analysis (ICA) [63] , Wavelet/fuzzy entropy [64] , and 
+wavelet/neuro-fuzzy [65,66] . Different meta-heuristic optimization 
+algorithms found applications in this field such as genetic evolu- 
+tionary algorithm [67] , and grey wolf optimization [68] . Recently 
+in 2020, Bhardwaj et al [69] used an optimized Bayesian modal 
+based on genetic algorithm in the wavelet domain in order to fuse 
+different MRI modalities (Flair, T1, T2). Hereby, the genetic algo- 
+rithm is used to optimize the fusion parameter of Bayesian modal. 
+However, they have been reported to be time-consuming due to 
+random optimization process. Practically, effectiveness of these hy- 
+brid methods across all modalities is a challenging problem since 
+being skewed towards quality of the training images that differs 
+from one imaging condition to another [9] . 
+3.1.3. Ridgelet transform 
+Multi-scale geometric decomposition (MGD) was introduced to 
+overcome the limitation of directionality by defining some rules 
+on the wavelet functions or by proposing specific treatment within 
+wavelets. According to the review in [48] , these transforms, termed 
+directional or geometrical, can be grouped into two families; adap- 
+tive transforms (e.g., bandelet, wedgelet) and non-adaptive trans- 
+forms (e.g., curvelet, contourlet). The first family builds an adap- 
+tive structure of the image, while the second defines additive 
+mathematical rules on wavelets for amelioration. A panorama on 
+multi-scale geometric representation theory was developed in [70] . 
+Wavelets loose performance in detecting 1D singularities when de- 
+composing 2D images using 2D separable basis. However, ridgelet 
+transform (RT) outperforms WT in representing 1D singularities, 
+mostly linear singularities in images [71] . 
+Based on wavelet theory, the ridgelet transform arose from a 
+need to find a sparse representation of objects with discontinu- 
+ities across straight lines. Developed by Candès in 1998 [72] , it is 
+basically a tool for shape and ridge detection in images. 2-D RT of 
+an image I = (x 1 , x 2 ) is exposed in Eq. (4) as wavelet analysis in 
+the Radon domain, where ψ a,b,θ(x 1 , x 1 ) stands for the ridgelet ba- 
+sis function and R I (a, b, θ) (scale a , translation b and rotation θ) 
+are the ridgelet coefficients for each a > 0 , b ∈ R , θ ∈ [ 0 ;2 π) , a. In 
+this context, edge detection and extraction forms the motivation 
+to fuse MRI/CT scans in the ridgelet domain and outperforms DWT 
+[71] . 
+ψ a,b,θ (x 1 , x 1 ) = a −1 
+2 
+R I (a, b, θ) = 
+−∞ 
+ψ 
+(x 1 cos θ + x 2 sin θ) −b 
+a 
++ ∞ 
+ψ a,b,θ (x 1 , x 1 ) I(x 1 , x 2 ) dx 1 dx 2 
+(4) 
+Bhateja et al. [73] presented a comparative analysis and evaluation 
+of MMIF in both wavelet and ridgelet domains when combined 
+with principal component analysis (PCA). Authors highlighted the 
+complementarity of both transforms in depicting particular types 
+of features (i.e, location and frequency information with wavelets 
+along with edge features captured with ridgelets). In meantime, no 
+great deal of works around RT have been published. 
+3.1.4. Curvelet transform 
+Candes et al. [72] developed an evolution of ridgelet in 20 0 0 
+termed curvelet (CVT) since Fourier transform does not well handle 
+discontinuities. Hereby, a real breakthrough occurred by providing 
+optimally sparse representations. The first generation CVT’s idea 
+was to capture edges and lines by decomposing the image into 
+sub-images (tiles), then applying the RT on each of them. The sec- 
+ond generation theory got rid of ridgelet, so to increase the speed 
+and reduce redundancy [74] . The curvelet function is defined in 
+Eq. (5) by a rotation R θl of an angle θl at orientation l and a trans- 
+lation x (j, l) 
+k 
+at position k = (k 1 , k 2 ) ∈ R 2 at scale j as. The flowchart 
+of CVT is illustrated in Fig. 4 .(a). Thereby, the wrapping algorithm is 
+applied after the 2-D Fourier transform (2-D FFT) with the inten- 
+tion to re-index the image instead of the tiling. An example of the 
+curvelet atom, more suitable to capture edges than of the wavelet 
+atom, is presented in Fig. 4 .(b). 
+φj,k,l (x ) = φj [ R θl 
+(x − x (j,l) 
+k 
+)] 
+R θl = 
+cos θl sin θl 
+−sin θl cos θl 
+(5) 
+Therefore, CVT represents curves as a superposition of bases 
+with different widths and lengths, while respecting the parabolic 
+scaling law ( width = length 2 ) as can be observed in Fig. 4 (c) [70] . 
+Initially, it was proposed for multi-focus and remote sensing ap- 
+plications [75] , then targeted medical applications. Markedly, the 
+f
+irst generation of curvelets were used in [76] aiming to pre- 
+serve edges outperformed PCA and DWT. Himanshi et al. [77] pre- 
+sented an MRI/CT fusion approach that combines the edges detec- 
+tion characteristic of curvelets and the PCA feature enhancement 
+6 
+H. Hermessi, O. Mourali and E. Zagrouba 
+Signal Processing 183 (2021) 108036 
+Fig. 4. The curvelet flowchart and frequency support: (a) Second generation CVT 
+decomposition process, (b) Example of curvelet (left) and wavelet atoms (right), (c) 
+The frequency support [70] . 
+Fig. 5. The contourlet transform: (a) block diagram ( ↓ (2,2) means sub-sampling), 
+and (b) frequency partition [55,83] . 
+property. Maximum of local energy in the CVT domain were used 
+to fuse PET/MRI in [78] . Recently, Baghaie et al. [79] proposed a 
+3D CVT-based fusion scheme to notice its superiority compared to 
+3D wavelets. In [80] , authors merged three-bands of MRI, namely 
+T1, T2 and PD-weighted images for classification and segmentation 
+purposes. Experimental comparison between CVT and WT based 
+image fusion in [81] has resulted in CVT better curved visual de- 
+tails. Furthermore, Arif et al. [82] developed a hybrid approach of 
+CVT with a genetic algorithm (GA) in which GA can further refine 
+the extracted feature, thus to reduce ambiguity around edges. Per- 
+formance comparison of different MGDs indicated that optimal set- 
+ting for the decomposition level is four. Mainly, methods adopting 
+large levels are prone to noise and more time and memory con- 
+suming [83] . 
+3.1.5. Contourlet transform 
+Besides CVT, another transform named contourlet (CRT) was de- 
+veloped in 2005 by Do et al. [84] aiming to capture the intrin- 
+sic geometrical features of an image and to enhance the isotropic 
+property of wavelets. As a directional multi-resolution transform, 
+the decomposition comprises two filtering steps. First, a Laplacian 
+pyramid is applied to select point discontinuities, then a local di- 
+rectional decomposition is performed through a directional filter 
+bank (DBF) to link these discontinuities into a linear structures 
+[39,83] . The set of basis oriented along different scales and direc- 
+tions made CRT an effective tool to select intrinsic contours rather 
+than with curvelets or ridgelets. Fig. 5 .(a) shows the block diagram 
+of the CRT. However, due to the down-sampling and up-sampling, 
+it is not shift-invariant. The so called non-subsampled contourlet 
+transform (NSCT) is a fully shift invariant expansion that has fast 
+implementation where Laplacian decomposition and DBF are both 
+non-subsampled [85] . The frequency partition in Fig. 5 .(b) depicts 
+8 directions (1–4 subbands correspond to the mostly horizontal di- 
+rections while 5–8 correspond to the mostly vertical directions). 
+For instance, several studies used CRT to preserve local bright- 
+ness and reduce distortion in CT/MRI images like in [55,86] . It was 
+also performed to add structural information from MRI to func- 
+tional information of PET based on local energy and local variance 
+[87] . Nevertheless, NSCT was worthy to be investigated due to its 
+shift-invariance, multi-scale and multi-direction properties [85] . To 
+this end, hybrid schemes were proposed in literature such as NSCT 
+with PCA [88] , or Gabor filter bank [86] . Correspondingly, sparse 
+representation (SR) was not spared to be joined with NSCT such 
+as in [89] using a clustering-based dictionary learning in the NSCT 
+domain. In [90] , low-pass bands were merged using SR as an ac- 
+tivity level measurement. 
+In a “shallow” learning fashion, different extensions of pulse 
+coupled neural network (PCNN) were conceptualized to manage 
+NSCT sub-images. In [32] , Tian et al. proposed an improved PCNN 
+where the linking strength parameter is calculated using the lo- 
+cal area singular value decomposition of the structural information 
+factor. In [91] , Dai et al. designed an adaptive local visual contrast 
+PCNN [91] . Both schemes outperformed WT and NSCT. The orig- 
+inal PCNN was adopted in [92] for high-frequency subbands fu- 
+sion. Moreover, fuzzy logic has been introduced in order to effi- 
+ciently handle uncertainties. It can be seen as feature transform 
+operator or a decision operator [93] . The fusion process adopted 
+either a neuro-fuzzy model [25] , or a type-2 fuzzy based fusion 
+rule [94] . Consequently, the uncertainty modeling achieved good 
+visual effects with less degradation. Likewise, the recent study 
+in [26] sparsely represented subbands with learned dictionaries 
+within low and high sub-images, afterwards PCNN is motivated 
+to select coefficients according to the large firing times. However, 
+these transforms were recognized to be not very efficient in cap- 
+turing geometric singularities in multidimensional signals like im- 
+ages due to the isotropic dilation property of wavelets. 
+3.1.6. Shearlet transform 
+To crack the directionality shortcoming, the shearlet transform 
+(ST) was proposed by Guo [95] , and Labate [96] as an evolution of 
+CVT where atoms are built by replacing the directional filter with 
+the shear filter. The anisotropic shear, instead of CVT’s anisotropic 
+stretch, helps to provide the same approximation criterion and 
+controls the directional sensitivity [97] . ST constructs a set of gen- 
+erating functions defined not only at different scales and locations 
+as wavelets, but also at various orientations. In the continuous do- 
+main and with dimension n = 2 , shearlets of such f ∈ L 2 (R 2 ) are 
+generated by ψ ∈ L 2 (R 2 ) as the mapping [95–97] : 
+SH ψ (a, s, t) =  f, ψ ast  : a > 0 , s ∈ R , t ∈ R 2 
+(6) 
+where A a denotes the parabolic scaling matrix and S s is the shear 
+matrix defined in the continuous system as: 
+ψ a,s,t (x ) = a −3 
+4 
+ψ(A −1 
+a S −1 
+s (x −t)) : a ∈ R + , s ∈ R , t ∈ R 2 
+S s = 
+1 s 
+0 1 
+;A a = 
+a 0 
+0 
+√ 
+a 
+(7) 
+where ψ a,s,t is the shearlet atom controlled by three parameters; 
+the scale a, the shear s and the translation t [98] . A a controls the 
+scale of the shearlet by performing a different dilation factor along 
+the two axes, and S s controls the orientation. Each element of ψ j,l,k 
+is compactly supported by a pair of trapezoids having approxi- 
+mately the size of 2 2 j x 2 j along the lines of slope l2 j as shown 
+in Fig. 6 .(b). Presently, detailed definitions and demonstrated the- 
+orems can be found in [95,96,98,99] . Thereupon, the discrete ST is 
+defined to be the affine systems with composite dilations as col- 
+lections of the form [99] : 
+A A,S (ψ) = { ψ j,k,l (x ) = | detA | j 
+2 
+j, l ∈ Z , k ∈ Z ⊭ } 
+7 
+ψ(S l A j x −k ) : 
+(8) 
+H. Hermessi, O. Mourali and E. Zagrouba 
+Signal Processing 183 (2021) 108036 
+Fig. 6. Shearlets: (a) Frequency tiling (b) Trapezoidal frequency support [99] . 
+where ψ ∈ L 2 (R 2 ) , A and S are 2 × 2 invertible matrices and 
+| detS| = 1 . The elements of A A,S form a Parseval (also called tight ) 
+frame for L 2 (R 2 ) . The tiling of the frequency induced by the 
+tight frame is illustrated in Fig. 6 (a). The frequency support is 
+increasingly elongated at finer scales due to the anisotropic ma- 
+trix when compared with the frequency support of contourlet as 
+shown in Fig. 4 .(c), which makes shearlets optimally sparse for 
+sharp transitions representation. However, ST has been reported to 
+be less sensitive to shift-invariance due to the subsampling process 
+which causes Gibbs phenomena [100] . The non-subsampled shear- 
+let transform (NSST) has coped with this limitation by eliminating 
+sub-sampling effects [99] . 
+The sparsity criterion has been reported to be beneficial for var- 
+ious imaging applications, specifically in various image fusion tasks 
+such as remote sensing [101] , infrared and visible images [102] and 
+multi-focus images [103] . In the medical field, various modalities 
+have been fused within the three abstraction levels; for instance, 
+PET/MRI of brain tissues in the pixel level [104] , 3D-T1/T2 MRI 
+in the feature level [105] , and MRI/CT in the decision level [106] . 
+Most existing shearlet-based fusion methods belong to the pixel 
+level category. The feature level depends on the fusion rule be- 
+tween correlated coefficients which is a challenging task. In par- 
+ticular, the highest level is application-dependent and provides in 
+certain cases best fusion performance. Sparse representation the- 
+ory takes advantages of good anisotropy and directional selectivity. 
+Hermessi et al. [66] fused CT and MRI by using neuro-fuzzy in- 
+ference in the shearlet domain. Tan et al. [107] trained K-means 
+singular value decomposition (K-SVD) with low frequency shearlet 
+coefficients to fuse sub-images based on orthogonal matching pur- 
+suit (OMP). In [105] , 3D high frequency subbands are merged using 
+structure tensor and rank analysis method. Duan et al. evaluated 
+their 3D dual tree ST-based approach with different direction and 
+scale numbers, and reported that increased direction number (su- 
+perior to 48) cannot always result in a better fused image. Earlier, 
+Qiu et al. [108] enhanced the sparsity criterion in the shearlet do- 
+main through dynamic group sparsity recovery (DGSR) algorithm 
+instead of OMP. Besides, fuzzy logic in the shearlet domain was not 
+deeply explored in literature. A feature-level volumetric MRI fusion 
+framework was introduced in [23] using 3D-ST where type-2 fuzzy 
+entropy is performed on high frequency subbands. 
+Several other fusion strategies have took advantages of ST in- 
+cluding but not restricted to, PCA [109] , SVD [110] , and non- 
+negative matrix factorization [15] . In summary, ST-based methods 
+better preserve most of the useful information (anatomical and 
+functional) and contrast, typically outperforms the above explored 
+MGDs. This is due to directional sensitivity where the number of 
+orientation at each scale is unlimited. Mainly, many other trans- 
+forms have been proposed in medical image fusion, including the 
+higher order generalization of CVT termed ripplet-I transform [12] , 
+the ripplet-II transform [111] , the grouplet transform [112] , the 
+framelet transform [113] , the tetrolet transform [35] , etc. However, 
+there is a trade-off between noise and artifacts in the fused re- 
+sults and capability to detect spatial details [83] . Indeed, the wide 
+range image fusion in the pixel level has not spared the feature de- 
+cision levels. In feature-based techniques, MGDs have contributed 
+[19,23,109] to improve the fusion performance, but still depends 
+on the image quality, which needs careful attention when design- 
+ing such pipelines. Noise also affects the fusion quality in the fea- 
+ture level. A pre-processing should be applied to remove undesired 
+noise and artifacts.
