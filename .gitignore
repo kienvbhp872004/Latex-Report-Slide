@@ -1,0 +1,35 @@
+# ============================================================
+# LaTeX Build Output - Không cần track
+# ============================================================
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+texput.log
+
+# PDF output (bỏ comment dòng dưới nếu KHÔNG muốn track PDF)
+# *.pdf
+
+# ============================================================
+# Reference PDFs - File lớn, không cần commit
+# ============================================================
+Reference/*.pdf
+
+# ============================================================
+# Editor / OS junk
+# ============================================================
+.vscode/
+*.DS_Store
+Thumbs.db

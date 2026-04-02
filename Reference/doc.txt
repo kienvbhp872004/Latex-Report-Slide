@@ -1,400 +1,345 @@
-3.1. Multi-scale decomposition based methods 
-In the transform domain, the typical flow diagram of image fu- 
-sion based on multi-scale decomposition (MSD) is illustrated in 
-Fig. 3 . Source images are first decomposed into multi-scale co- 
-efficients using a decomposition transform, then coefficients are 
-merged according to some fusion rules, and finally the inverse of 
-the transform is applied to reconstruct the fused image [38] . It is 
-important to notice that the multi-scale scheme can be extended 
-to more source images. Hence, advantageous MSD properties made 
-them a revolutionary tools due to their ability to extract spatial 
-structures over different scales. Mainly, the main strength lies in 
-the fusion strategy which depends on the activity level measure- 
-ment of coefficients, the consistency verification, the correlation of 
-adjacent pixels and the coefficient grouping strategy [39] . 
-3.1.1. Pyramid transform 
-In the early eighties, the notion of scales was introduced before 
-the emergence of wavelets , aiming to localize objects in the image. 
-One of the most primitively employed MSD tools was the pyra- 
-midal transforms. Hereby, the decomposition process consists of 
-successive filtering and down sampling steps, resulting in a set of 
-band-pass and low-pass copies of the image that imitate the pyra- 
-mid structure. Low frequencies are concentrated in higher levels 
-[40] . Decomposition ( Eq. 1 ) and reconstruction ( Eq. (2) ) are given 
-as follows: 
-R i = F i ∗P i ;P i + 1 = P i −R i ;i = 1 , . . . , L , P 1 = I 
-L  
-I rec = P L + 1 + 
-i = 1 
-R i 
-(1) 
-(2) 
-Where R i denotes the residual image at level i , F i stands for the 
-down-sampling filter, L is the number of decomposition levels, P i is 
-the pyramid representation of input image I at level i and I rec de- 
-notes the reconstructed image [3] . According to the filter type, the 
-most popular pyramidal decomposition methods adopted in MMIF 
-include Laplacian pyramids [11] , gradient pyramids [16] , mor- 
-phological pyramids [41] , steerable pyramids [42] , ratio pyramids 
-[38] , etc. Notwithstanding, theses methods are non-orientation, en- 
-counter problems with noisy images, and cause blocking effects. 
-Hence, contrast pyramid can not preserve salient information. Mor- 
-phological pyramid is not efficient in edge presentation, while gra- 
-dient pyramid join undesirable artifacts [43] . In the spatial domain, 
-Shuaiqi et al [44] proposed a pixel-level fusion algorithm based on 
-improved sum-modified-Laplacian (ISML) to overcome the blocking 
-effects and artifacts. Anatomical and Functional images are pro- 
-cessed with local Laplacian filtering, then sub-images were fused 
-by maximizing the local energy [45] . To summarize, all pyramid 
-based methods suffer from blocking artifacts and furnish undesired 
-edges. The following transforms have investigated these shortcom- 
-ings. 
-3.1.2. Wavelet transform 
-The first wavelets was developed in 1909 by Alfred Haar , and 
-has surpassed the limitation of time-frequency localization. Ini- 
-tially, it has been presented as optimal tools to analyze one- 
-dimensional signals in 1980, then moved towards 2-D image repre- 
-sentations. Mallat et al. [46] reported that properties of the wavelet 
-transform (WT) are suitable for particular signal processing appli- 
-cations such as compression. Particularly, it has been found effi- 
-cient in extracting information details from one image to inject it 
-into another based on additions, substitutions or selection strate- 
-gies [47] . Often, WT is an extension of the high pass filtering 
-idea, and are typically based on functions that are localized in 
-both frequency and space. It can be described as a combination of 
-two groups of functions; wavelet functions and scaling functions. 
-Hence, the wavelet functions are called the mother wavelets. Trans- 
-formations of the mother are termed the daughter wavelets which 
-should be scaled and translated [47] . A normalization factor is also 
-applied to the daughter wavelet which can ψ can be defined by: 
-ψ a,b (x ) = a −1 
-2 
-ψ 
-x −b 
-a 
-(3) 
-5 
-H. Hermessi, O. Mourali and E. Zagrouba 
-Signal Processing 183 (2021) 108036 
-Where x = (x 1 , x 2 ) ∈ R 2 refers to spatial coordinates of a given 
-pixel x . Commonly, a > 0 , b ∈ R , a stands for dyadic scaling. j ∈ Z 
-refers to scales. b stands for the translation factor, and k ∈ N r efers 
-to three (diagonal, vertical and horizontal) supported directions 
-[47,48] . The common choice in Eq. (3) is given by a = 2 −j and 
-b = 2 −j k . 
-The discrete W T (DW T), with capabilities in capturing location 
-as well as frequency information, is able to better separate high 
-frequencies from low frequencies, but lacks of shift-invariance due 
-the down sampling process [49] . The state of the art in MMIF 
-based on wavelets was chronologically reviewed in well-ranked 
-journals [3,9,47,50] . Pajares et al. [50] reviewed image fusion in 
-the wavelet domain and cited three reasons behind its appropri- 
-ateness; (1) DWT preserves information through image decomposi- 
-tion, (2) coefficients can be appropriately combined to obtain new 
-ones that best collect the original information, and (3) it is well 
-suited to manage different image resolutions. However, wavelets 
-show its drawbacks while representing higher number of direc- 
-tional features. It was proven deficient of shift invariance prop- 
-erty, along with inability to efficiently represent anisotropic fea- 
-tures and sharp transitions like edges [39] . DWT was proposed to 
-merge different combinations of multi-modalities such as MRI/CT 
-[51] , PET/CT [52] and PET/MRI [13] , etc. 
-The first wavelet based image fusion schemes appeared in mid 
-nineties to outperform pyramid based methods. The dual tree com- 
-plex wavelet transform (DTCWT), nearly shift-invariant and less 
-aliasing, has extended the direction support to six [24] . The non- 
-subsampled DTCWT has enhanced the phase information, shift- 
-invariance and multi-scalability in [19] . The sift-invariance prop- 
-erty of the redundant DWT (RDWT) has also provided better fusion 
-results in [53] . Furthermore, several extensions of WT were suc- 
-cessfully applied MMIF such as, the lifting WT [36] , multi-wavelet 
-transform (MWT) which provides more texture information [18] , 
-Daubechies complex W T (DCW T) [54] , stationary W T (SW T) [14] , 
-morphological wavelet [55] . The Quaternion wavelet transform 
-(QWT) has some merits over WT and DCWT through its shift in- 
-variant magnitude better for textural information, and its richer 
-geometric information given by its phase [56] . Meanwhile, the fu- 
-sion process in the wavelet domain can occur in the pixel level and 
-also in the mid-level by merging directional features [57] . Recent 
-works proposed different combinations to take benefits from dif- 
-ferent transforms, including but not limited to, wavelet-contourlet 
-[14] , wavelet-curvelet [58] and wavelet-ripplet [59] and wavelet- 
-shearlet [60] . The main objective behind these hybrid combinations 
-is to overcome limitations of wavelets by selecting more salient di- 
-rectional features. In the decision level, DWT has been adopted to- 
-gether with self-organizing neural networks as a fusion rule [61] . 
-Several feature and decision fusion schemes gave rise to hybrid 
-approaches for instance; wavelet/SVM [62] , wavelet/independent 
-component analysis (ICA) [63] , Wavelet/fuzzy entropy [64] , and 
-wavelet/neuro-fuzzy [65,66] . Different meta-heuristic optimization 
-algorithms found applications in this field such as genetic evolu- 
-tionary algorithm [67] , and grey wolf optimization [68] . Recently 
-in 2020, Bhardwaj et al [69] used an optimized Bayesian modal 
-based on genetic algorithm in the wavelet domain in order to fuse 
-different MRI modalities (Flair, T1, T2). Hereby, the genetic algo- 
-rithm is used to optimize the fusion parameter of Bayesian modal. 
-However, they have been reported to be time-consuming due to 
-random optimization process. Practically, effectiveness of these hy- 
-brid methods across all modalities is a challenging problem since 
-being skewed towards quality of the training images that differs 
-from one imaging condition to another [9] . 
-3.1.3. Ridgelet transform 
-Multi-scale geometric decomposition (MGD) was introduced to 
-overcome the limitation of directionality by defining some rules 
-on the wavelet functions or by proposing specific treatment within 
-wavelets. According to the review in [48] , these transforms, termed 
-directional or geometrical, can be grouped into two families; adap- 
-tive transforms (e.g., bandelet, wedgelet) and non-adaptive trans- 
-forms (e.g., curvelet, contourlet). The first family builds an adap- 
-tive structure of the image, while the second defines additive 
-mathematical rules on wavelets for amelioration. A panorama on 
-multi-scale geometric representation theory was developed in [70] . 
-Wavelets loose performance in detecting 1D singularities when de- 
-composing 2D images using 2D separable basis. However, ridgelet 
-transform (RT) outperforms WT in representing 1D singularities, 
-mostly linear singularities in images [71] . 
-Based on wavelet theory, the ridgelet transform arose from a 
-need to find a sparse representation of objects with discontinu- 
-ities across straight lines. Developed by Candès in 1998 [72] , it is 
-basically a tool for shape and ridge detection in images. 2-D RT of 
-an image I = (x 1 , x 2 ) is exposed in Eq. (4) as wavelet analysis in 
-the Radon domain, where ψ a,b,θ(x 1 , x 1 ) stands for the ridgelet ba- 
-sis function and R I (a, b, θ) (scale a , translation b and rotation θ) 
-are the ridgelet coefficients for each a > 0 , b ∈ R , θ ∈ [ 0 ;2 π) , a. In 
-this context, edge detection and extraction forms the motivation 
-to fuse MRI/CT scans in the ridgelet domain and outperforms DWT 
-[71] . 
-ψ a,b,θ (x 1 , x 1 ) = a −1 
-2 
-R I (a, b, θ) = 
-−∞ 
-ψ 
-(x 1 cos θ + x 2 sin θ) −b 
-a 
-+ ∞ 
-ψ a,b,θ (x 1 , x 1 ) I(x 1 , x 2 ) dx 1 dx 2 
-(4) 
-Bhateja et al. [73] presented a comparative analysis and evaluation 
-of MMIF in both wavelet and ridgelet domains when combined 
-with principal component analysis (PCA). Authors highlighted the 
-complementarity of both transforms in depicting particular types 
-of features (i.e, location and frequency information with wavelets 
-along with edge features captured with ridgelets). In meantime, no 
-great deal of works around RT have been published. 
-3.1.4. Curvelet transform 
-Candes et al. [72] developed an evolution of ridgelet in 20 0 0 
-termed curvelet (CVT) since Fourier transform does not well handle 
-discontinuities. Hereby, a real breakthrough occurred by providing 
-optimally sparse representations. The first generation CVT’s idea 
-was to capture edges and lines by decomposing the image into 
-sub-images (tiles), then applying the RT on each of them. The sec- 
-ond generation theory got rid of ridgelet, so to increase the speed 
-and reduce redundancy [74] . The curvelet function is defined in 
-Eq. (5) by a rotation R θl of an angle θl at orientation l and a trans- 
-lation x (j, l) 
-k 
-at position k = (k 1 , k 2 ) ∈ R 2 at scale j as. The flowchart 
-of CVT is illustrated in Fig. 4 .(a). Thereby, the wrapping algorithm is 
-applied after the 2-D Fourier transform (2-D FFT) with the inten- 
-tion to re-index the image instead of the tiling. An example of the 
-curvelet atom, more suitable to capture edges than of the wavelet 
-atom, is presented in Fig. 4 .(b). 
-φj,k,l (x ) = φj [ R θl 
-(x − x (j,l) 
-k 
-)] 
-R θl = 
-cos θl sin θl 
-−sin θl cos θl 
-(5) 
-Therefore, CVT represents curves as a superposition of bases 
-with different widths and lengths, while respecting the parabolic 
-scaling law ( width = length 2 ) as can be observed in Fig. 4 (c) [70] . 
-Initially, it was proposed for multi-focus and remote sensing ap- 
-plications [75] , then targeted medical applications. Markedly, the 
-f
-irst generation of curvelets were used in [76] aiming to pre- 
-serve edges outperformed PCA and DWT. Himanshi et al. [77] pre- 
-sented an MRI/CT fusion approach that combines the edges detec- 
-tion characteristic of curvelets and the PCA feature enhancement 
-6 
-H. Hermessi, O. Mourali and E. Zagrouba 
-Signal Processing 183 (2021) 108036 
-Fig. 4. The curvelet flowchart and frequency support: (a) Second generation CVT 
-decomposition process, (b) Example of curvelet (left) and wavelet atoms (right), (c) 
-The frequency support [70] . 
-Fig. 5. The contourlet transform: (a) block diagram ( ↓ (2,2) means sub-sampling), 
-and (b) frequency partition [55,83] . 
-property. Maximum of local energy in the CVT domain were used 
-to fuse PET/MRI in [78] . Recently, Baghaie et al. [79] proposed a 
-3D CVT-based fusion scheme to notice its superiority compared to 
-3D wavelets. In [80] , authors merged three-bands of MRI, namely 
-T1, T2 and PD-weighted images for classification and segmentation 
-purposes. Experimental comparison between CVT and WT based 
-image fusion in [81] has resulted in CVT better curved visual de- 
-tails. Furthermore, Arif et al. [82] developed a hybrid approach of 
-CVT with a genetic algorithm (GA) in which GA can further refine 
-the extracted feature, thus to reduce ambiguity around edges. Per- 
-formance comparison of different MGDs indicated that optimal set- 
-ting for the decomposition level is four. Mainly, methods adopting 
-large levels are prone to noise and more time and memory con- 
-suming [83] . 
-3.1.5. Contourlet transform 
-Besides CVT, another transform named contourlet (CRT) was de- 
-veloped in 2005 by Do et al. [84] aiming to capture the intrin- 
-sic geometrical features of an image and to enhance the isotropic 
-property of wavelets. As a directional multi-resolution transform, 
-the decomposition comprises two filtering steps. First, a Laplacian 
-pyramid is applied to select point discontinuities, then a local di- 
-rectional decomposition is performed through a directional filter 
-bank (DBF) to link these discontinuities into a linear structures 
-[39,83] . The set of basis oriented along different scales and direc- 
-tions made CRT an effective tool to select intrinsic contours rather 
-than with curvelets or ridgelets. Fig. 5 .(a) shows the block diagram 
-of the CRT. However, due to the down-sampling and up-sampling, 
-it is not shift-invariant. The so called non-subsampled contourlet 
-transform (NSCT) is a fully shift invariant expansion that has fast 
-implementation where Laplacian decomposition and DBF are both 
-non-subsampled [85] . The frequency partition in Fig. 5 .(b) depicts 
-8 directions (1–4 subbands correspond to the mostly horizontal di- 
-rections while 5–8 correspond to the mostly vertical directions). 
-For instance, several studies used CRT to preserve local bright- 
-ness and reduce distortion in CT/MRI images like in [55,86] . It was 
-also performed to add structural information from MRI to func- 
-tional information of PET based on local energy and local variance 
-[87] . Nevertheless, NSCT was worthy to be investigated due to its 
-shift-invariance, multi-scale and multi-direction properties [85] . To 
-this end, hybrid schemes were proposed in literature such as NSCT 
-with PCA [88] , or Gabor filter bank [86] . Correspondingly, sparse 
-representation (SR) was not spared to be joined with NSCT such 
-as in [89] using a clustering-based dictionary learning in the NSCT 
-domain. In [90] , low-pass bands were merged using SR as an ac- 
-tivity level measurement. 
-In a “shallow” learning fashion, different extensions of pulse 
-coupled neural network (PCNN) were conceptualized to manage 
-NSCT sub-images. In [32] , Tian et al. proposed an improved PCNN 
-where the linking strength parameter is calculated using the lo- 
-cal area singular value decomposition of the structural information 
-factor. In [91] , Dai et al. designed an adaptive local visual contrast 
-PCNN [91] . Both schemes outperformed WT and NSCT. The orig- 
-inal PCNN was adopted in [92] for high-frequency subbands fu- 
-sion. Moreover, fuzzy logic has been introduced in order to effi- 
-ciently handle uncertainties. It can be seen as feature transform 
-operator or a decision operator [93] . The fusion process adopted 
-either a neuro-fuzzy model [25] , or a type-2 fuzzy based fusion 
-rule [94] . Consequently, the uncertainty modeling achieved good 
-visual effects with less degradation. Likewise, the recent study 
-in [26] sparsely represented subbands with learned dictionaries 
-within low and high sub-images, afterwards PCNN is motivated 
-to select coefficients according to the large firing times. However, 
-these transforms were recognized to be not very efficient in cap- 
-turing geometric singularities in multidimensional signals like im- 
-ages due to the isotropic dilation property of wavelets. 
-3.1.6. Shearlet transform 
-To crack the directionality shortcoming, the shearlet transform 
-(ST) was proposed by Guo [95] , and Labate [96] as an evolution of 
-CVT where atoms are built by replacing the directional filter with 
-the shear filter. The anisotropic shear, instead of CVT’s anisotropic 
-stretch, helps to provide the same approximation criterion and 
-controls the directional sensitivity [97] . ST constructs a set of gen- 
-erating functions defined not only at different scales and locations 
-as wavelets, but also at various orientations. In the continuous do- 
-main and with dimension n = 2 , shearlets of such f ∈ L 2 (R 2 ) are 
-generated by ψ ∈ L 2 (R 2 ) as the mapping [95–97] : 
-SH ψ (a, s, t) =  f, ψ ast  : a > 0 , s ∈ R , t ∈ R 2 
-(6) 
-where A a denotes the parabolic scaling matrix and S s is the shear 
-matrix defined in the continuous system as: 
-ψ a,s,t (x ) = a −3 
-4 
-ψ(A −1 
-a S −1 
-s (x −t)) : a ∈ R + , s ∈ R , t ∈ R 2 
-S s = 
-1 s 
-0 1 
-;A a = 
-a 0 
-0 
-√ 
-a 
-(7) 
-where ψ a,s,t is the shearlet atom controlled by three parameters; 
-the scale a, the shear s and the translation t [98] . A a controls the 
-scale of the shearlet by performing a different dilation factor along 
-the two axes, and S s controls the orientation. Each element of ψ j,l,k 
-is compactly supported by a pair of trapezoids having approxi- 
-mately the size of 2 2 j x 2 j along the lines of slope l2 j as shown 
-in Fig. 6 .(b). Presently, detailed definitions and demonstrated the- 
-orems can be found in [95,96,98,99] . Thereupon, the discrete ST is 
-defined to be the affine systems with composite dilations as col- 
-lections of the form [99] : 
-A A,S (ψ) = { ψ j,k,l (x ) = | detA | j 
-2 
-j, l ∈ Z , k ∈ Z ⊭ } 
-7 
-ψ(S l A j x −k ) : 
-(8) 
-H. Hermessi, O. Mourali and E. Zagrouba 
-Signal Processing 183 (2021) 108036 
-Fig. 6. Shearlets: (a) Frequency tiling (b) Trapezoidal frequency support [99] . 
-where ψ ∈ L 2 (R 2 ) , A and S are 2 × 2 invertible matrices and 
-| detS| = 1 . The elements of A A,S form a Parseval (also called tight ) 
-frame for L 2 (R 2 ) . The tiling of the frequency induced by the 
-tight frame is illustrated in Fig. 6 (a). The frequency support is 
-increasingly elongated at finer scales due to the anisotropic ma- 
-trix when compared with the frequency support of contourlet as 
-shown in Fig. 4 .(c), which makes shearlets optimally sparse for 
-sharp transitions representation. However, ST has been reported to 
-be less sensitive to shift-invariance due to the subsampling process 
-which causes Gibbs phenomena [100] . The non-subsampled shear- 
-let transform (NSST) has coped with this limitation by eliminating 
-sub-sampling effects [99] . 
-The sparsity criterion has been reported to be beneficial for var- 
-ious imaging applications, specifically in various image fusion tasks 
-such as remote sensing [101] , infrared and visible images [102] and 
-multi-focus images [103] . In the medical field, various modalities 
-have been fused within the three abstraction levels; for instance, 
-PET/MRI of brain tissues in the pixel level [104] , 3D-T1/T2 MRI 
-in the feature level [105] , and MRI/CT in the decision level [106] . 
-Most existing shearlet-based fusion methods belong to the pixel 
-level category. The feature level depends on the fusion rule be- 
-tween correlated coefficients which is a challenging task. In par- 
-ticular, the highest level is application-dependent and provides in 
-certain cases best fusion performance. Sparse representation the- 
-ory takes advantages of good anisotropy and directional selectivity. 
-Hermessi et al. [66] fused CT and MRI by using neuro-fuzzy in- 
-ference in the shearlet domain. Tan et al. [107] trained K-means 
-singular value decomposition (K-SVD) with low frequency shearlet 
-coefficients to fuse sub-images based on orthogonal matching pur- 
-suit (OMP). In [105] , 3D high frequency subbands are merged using 
-structure tensor and rank analysis method. Duan et al. evaluated 
-their 3D dual tree ST-based approach with different direction and 
-scale numbers, and reported that increased direction number (su- 
-perior to 48) cannot always result in a better fused image. Earlier, 
-Qiu et al. [108] enhanced the sparsity criterion in the shearlet do- 
-main through dynamic group sparsity recovery (DGSR) algorithm 
-instead of OMP. Besides, fuzzy logic in the shearlet domain was not 
-deeply explored in literature. A feature-level volumetric MRI fusion 
-framework was introduced in [23] using 3D-ST where type-2 fuzzy 
-entropy is performed on high frequency subbands. 
-Several other fusion strategies have took advantages of ST in- 
-cluding but not restricted to, PCA [109] , SVD [110] , and non- 
-negative matrix factorization [15] . In summary, ST-based methods 
-better preserve most of the useful information (anatomical and 
-functional) and contrast, typically outperforms the above explored 
-MGDs. This is due to directional sensitivity where the number of 
-orientation at each scale is unlimited. Mainly, many other trans- 
-forms have been proposed in medical image fusion, including the 
-higher order generalization of CVT termed ripplet-I transform [12] , 
-the ripplet-II transform [111] , the grouplet transform [112] , the 
-framelet transform [113] , the tetrolet transform [35] , etc. However, 
-there is a trade-off between noise and artifacts in the fused re- 
-sults and capability to detect spatial details [83] . Indeed, the wide 
-range image fusion in the pixel level has not spared the feature de- 
-cision levels. In feature-based techniques, MGDs have contributed 
-[19,23,109] to improve the fusion performance, but still depends 
-on the image quality, which needs careful attention when design- 
-ing such pipelines. Noise also affects the fusion quality in the fea- 
-ture level. A pre-processing should be applied to remove undesired 
-noise and artifacts.
+
+
+
+TONG HOP LY THUYET
+Image Decomposition trong bai toan Image Fusion
+SOTA 2022 - 2025
+
+
+Bao gom: Multi-scale Transform | Feature Decomp. | Diffusion | Retinex | INN
+ 
+1. Gioi thieu tong quan
+Image Fusion la bai toan ket hop thong tin tu nhieu anh nguon khac modality (infrared + visible, MRI + CT, multifocus...) nham tao ra mot anh duy nhat chua day du thong tin bo sung. Ung dung tieu bieu: giam sat an ninh, chan doan y te, xe tu lai, vien tham, robotics.
+
+Image Decomposition la thanh phan then chot trong hau het pipeline fusion SOTA. Y tuong cot loi: phan tach anh nguon thanh cac thanh phan doc lap de ap dung chien luoc fusion toi uu cho tung thanh phan truoc khi tong hop lai anh ket qua.
+
+Ghi chu: Tai lieu nay tong hop ly thuyet nen tang, phan tich toan hoc va so sanh cac phuong phap decomposition noi bat tu 2022 den dau 2025.
+
+1.1. Tai sao can Decomposition?
+Trong fusion, hai loai thong tin can xu ly khac nhau:
+•	Base / Low-frequency: thong tin cuong do nen, cau truc toan cuc (illumination, large-scale structure). Yeu cau tich hop nhat quan, tranh artifact.
+•	Detail / High-frequency: canh, ket cau, gradient cuc bo, nhieu. Yeu cau bao toan va lam sac net thong tin chi tiet tung modality.
+
+Neu ap dung fusion rule dong nhat cho toan bo anh, thuong dan den: mo canh, mat chi tiet texture, hoac sai lech mau sac. Decomposition cho phep thiet ke fusion rule rieng biet va phu hop.
+ 
+2. Nhom 1: Multi-scale Transform Decomposition
+Nhom phuong phap truyen thong voi nen tang toan hoc chat che, su dung cac bien doi toan hoc de phan tach anh thanh cac dai tan so hoac ti le (scale) khac nhau.
+
+2.1. Discrete Wavelet Transform (DWT)
+2.1.1. Nen tang ly thuyet
+DWT phan tach tin hieu 2D bang cach ap dung bo loc low-pass h[n] va high-pass g[n] theo ca hai chieu (hang va cot), sau do downsample 2x.
+
+Cho anh I(x,y), mot cap DWT tao ra 4 sub-band:
+•	LL: xap xi (approximation) – thong tin low-frequency, global structure
+•	LH: chi tiet nam ngang – canh nam ngang
+•	HL: chi tiet doc – canh doc
+•	HH: chi tiet cheo – goc, ket cau min
+
+Phuong trinh bien doi thuan (Forward DWT) cap 1:
+cLL(m,n) = Sum_k Sum_l  h[k] h[l] . I(2m-k, 2n-l)
+cLH(m,n) = Sum_k Sum_l  g[k] h[l] . I(2m-k, 2n-l)
+
+Bien doi nguoc (IDWT) cho phep tai tao anh ma khong mat thong tin (perfect reconstruction) khi bo loc thoa man dieu kien biorthogonal.
+
+2.1.2. Quy trinh Fusion voi DWT
+•	Buoc 1: DWT cho tung anh nguon I1, I2 → {LL1, LH1, HL1, HH1} va {LL2, LH2, HL2, HH2}
+•	Buoc 2: Fusion sub-band LL (low-freq): weighted average hoac max-intensity rule
+•	Buoc 3: Fusion sub-band LH/HL/HH (high-freq): max-absolute rule hoac activity-measure-based rule:
+  F_HH(m,n) = argmax_{k in {1,2}}  |c_HH^k(m,n)|
+•	Buoc 4: IDWT tren cac sub-band da fusion → anh ket qua
+
+2.1.3. Bien the SOTA: WaveFusionNet (2024)
+WaveFusionNet tich hop DWT vao encoder-decoder: cac lop DWT thay the max-pooling, giam mat thong tin spatial. Feature wavelet duoc feed vao attention module de tu dong hoc fusion weight thay vi dung hand-crafted rule.
+
+Ghi chu: Uu diem DWT: perfect reconstruction, nen tang ly thuyet chat. Nhuoc diem: shift-variant, it huong (3 huong: H, V, D).
+
+2.2. Non-subsampled Shearlet Transform (NSST)
+2.2.1. Dong luc va ly thuyet
+DWT chi co 3 huong. NSST ket hop Non-subsampled Contourlet Transform (NSCT) va Shearlet de dat phan giai da huong, da ti le ma khong aliasing (nho khong downsample).
+
+Shearlet psi duoc dinh nghia qua: psi_{j,l,k}(x) = a^{3j/4} psi(S_l A_a^j x - k)
+A_a: ma tran scale anisotropic | S_l: ma tran shear | k: vector dich chuyen
+
+NSST khong downsample → sub-band cung kich thuoc voi anh goc → de thiet ke fusion rule tai tung vi tri pixel.
+
+Ghi chu: Ung dung: NSST dac biet hieu qua trong Medical Image Fusion (MRI-CT, PET-MRI) nho kha nang bat canh da huong.
+
+2.3. Gaussian / Laplacian Pyramid
+2.3.1. Cau truc Pyramid
+Gaussian Pyramid tao chuoi anh mo dan: G_0 ⊃ G_1 ⊃ ... ⊃ G_N. Moi cap thu nho bang Gaussian kernel roi downsample 2x:
+G_{l+1}(i,j) = Sum_{m,n} w(m,n) . G_l(2i+m, 2j+n)
+
+Laplacian Pyramid la su khac biet giua cac cap Gaussian:
+L_l = G_l - EXPAND(G_{l+1})
+EXPAND: upsample + blur. Moi L_l chua thong tin detail tai ti le tuong ung. G_N (cap thap nhat) la residual base image.
+
+2.3.2. Octave Gaussian Pyramid (2024)
+Chia pyramid thanh octave (cac level cung kich thuoc) va interval (level trong moi octave), cho phep thu nhieu cap base-detail hon. Dung guided filter de tang sharpness o buoc upsample, giam halo artifact.
+
+2.4. Guided Filter & Edge-Preserving Decomposition
+2.4.1. Guided Filter
+Guided Filter (He et al., 2013) dua tren mo hinh tuyen tinh cuc bo:
+q_i = a_k . p_i + b_k,  voi i thuoc omega_k
+trong do p_i la anh input, q_i la output, omega_k la cua so cuc bo tai k. He so (a_k, b_k) tinh bang cach toi thieu hoa:
+E(a_k, b_k) = Sum_{i in omega_k} [(a_k.G_i + b_k - p_i)^2 + epsilon.a_k^2]
+Guided image G (thuong la anh goc hoac anh canh) giup bo loc bao toan canh manh.
+
+2.4.2. MLGEPF (2024)
+Multilevel Guided Edge-Preserving Filter xep chong nhieu cap guided filter tao multi-level decomposition nhanh O(n) ma khong dung DFT. Dac biet phu hop cho anh y te (PET-MRI, CT-MRI) vi bao toan structure.
+
+2.5. Wavelet + Mamba: WMambaFuse (2025)
+WMambaFuse ket hop hai module song song: WMFM (Wavelet-domain Mamba Fusion Module) xu ly thong tin frequency, va SAFM (Spatial Attention Fusion Module) xu ly khong gian. Swin Transformer encoder trich xuat feature da ti le. Mamba (SSM) duoc dung thay vi self-attention truyen thong O(n^2) de xu ly chuan token dai hieu qua hon (O(n)).
+
+Ghi chu: Xu huong 2024-2025: thay Transformer bang Mamba/SSM trong frequency domain de giam chi phi tinh toan tren anh high-resolution.
+ 
+3. Nhom 2: Feature Decomposition (Deep Learning)
+Nhom nay hoc cach phan tach truc tiep tu du lieu thay vi dung transform co dinh. Mang neural tu tim ra bieu dien toi uu cho fusion task.
+
+3.1. Base-Detail Decomposition: CDDFuse (CVPR 2023)
+3.1.1. Kien truc
+CDDFuse (Correlation-Driven Dual-Branch Fusion) la mot trong nhung mo hinh SOTA quan trong nhat 2023. Kien truc gom:
+•	Lite Transformer (LT) Block: xu ly low-frequency global feature (base). Transformer hoc moi quan he tam xa, phu hop de nam bat cau truc toan cuc.
+•	Invertible Neural Network (INN) Block: xu ly high-frequency local detail. INN dam bao thong tin detail khong bi mat nho tinh kha nghich.
+•	Correlation-Driven Loss: dieu khien qua trinh hoc decomposition.
+
+3.1.2. Correlation-Driven Loss – Dong gop ly thuyet cot loi
+(a) Correlation Loss cho Base Features – bat buoc base feature hai modality phai tuong quan cao (chia se thong tin cau truc chung):
+L_base = 1 - rho(F_base^{IR}, F_base^{VIS})
+trong do rho la Pearson correlation coefficient: rho(X,Y) = Cov(X,Y) / (sigma_X . sigma_Y)
+
+(b) Decorrelation Loss cho Detail Features – bat buoc detail feature hai modality phai it tuong quan (moi modality co chi tiet rieng biet):
+L_detail = |rho(F_detail^{IR}, F_detail^{VIS})|
+
+Tong loss:
+L_total = lambda1.L_base + lambda2.L_detail + lambda3.L_recon + lambda4.L_perception
+
+Ghi chu: Y tuong: base features correlate cao → fuse bang weighted avg. Detail features decorrelate → fuse bang max/concat de giu tinh rieng biet cua tung modality.
+
+3.1.3. Qua trinh Fusion
+•	Base fusion: F_base^F = (F_base^{IR} + F_base^{VIS}) / 2
+•	Detail fusion: F_detail^F = alpha . F_detail^{IR} + (1-alpha) . F_detail^{VIS} voi alpha hoc tu attention module
+•	Reconstruction: IDWT/decoder tu (F_base^F, F_detail^F) → fused image
+
+3.2. Modality-Specific / Shared Decomposition
+3.2.1. Ly thuyet Disentanglement
+Muc tieu hoc bieu dien factorized: tach shared content (cau truc giai phau, hinh dang vat the) va modality-specific content (thermal radiation, texture rieng).
+
+Cho encoder E_s (shared) va E_m (modality-specific), decoder D, anh nguon I^A, I^B:
+•	z_s^A = E_s(I^A), z_s^B = E_s(I^B) → phai giong nhau (shared)
+•	z_m^A = E_m(I^A), z_m^B = E_m(I^B) → phai khac nhau (modality-specific)
+•	I^A = D(z_s^A, z_m^A) (reconstruction)
+
+Loss disentanglement thuong dung:
+•	Cross-reconstruction: I^{A→B} = D(z_s^A, z_m^B) phai giong I^B
+•	MK-MMD (Multi-Kernel Maximum Mean Discrepancy): do distance giua distributions trong RKHS:
+  MMD^2(X,Y) = ||mu_X - mu_Y||^2_H
+
+3.2.2. DAF-Net (2024)
+DAF-Net dung Multi-Kernel MMD trong base encoder de align latent space IR va VIS. INN-based detail encoder tach rieng texture tung modality. Cross-attention giua shared va specific features truoc khi fusion.
+
+3.3. Semantic Layer Decomposition: PSFusion (2023)
+Phan tach theo semantic levels dua tren do sau trong mang backbone (ResNet). Layer nong (early) chua low-level feature (canh, mau sac); layer sau (late) chua high-level semantic feature (object, class).
+F_l = E_l(I)  voi l = 1..L (layer index)
+F^{fused} = Sum_l w_l . Fusion(F_l^{IR}, F_l^{VIS})
+
+PSFusion khai thac ResNet backbone trich xuat feature tai nhieu semantic level, thiet ke Progressive Semantic Fusion Module tu tho den tinh.
+
+3.4. Transformer-CNN Hybrid (DAF-Net, 2024)
+Mo hinh hybrid dung Transformer va CNN song song:
+•	Transformer branch: self-attention tren patch → global feature → base component
+•	CNN branch: conv layers → local feature → detail component
+•	Cross-branch fusion: cross-attention giua hai nhanh de bo sung thong tin
+ 
+4. Nhom 3: Generative / Diffusion-based Decomposition
+Nhom nay khong phan tach anh theo cach truyen thong ma formulate fusion nhu bai toan conditional generation hoac Bayesian inference trong khong gian latent cua mo hinh sinh.
+
+4.1. Nen tang: Denoising Diffusion Probabilistic Models (DDPM)
+4.1.1. Ly thuyet DDPM (Ho et al., 2020)
+Forward process (diffusion): them Gaussian noise vao du lieu x0 qua T buoc:
+q(x_t | x_{t-1}) = N(x_t;  sqrt(1-beta_t).x_{t-1},  beta_t.I)
+Closed form: q(x_t|x_0) = N(x_t;  sqrt(alpha_bar_t).x_0,  (1-alpha_bar_t).I)
+voi: alpha_bar_t = Product_{s=1}^{t} (1 - beta_s)
+
+Reverse process (denoising): hoc loai noise de tai tao anh tu noise:
+p_theta(x_{t-1}|x_t) = N(x_{t-1};  mu_theta(x_t,t),  Sigma_theta(x_t,t))
+Mang noise predictor eps_theta train voi loss:
+L_DDPM = E_{x0, eps, t} [|| eps - eps_theta(sqrt(alpha_bar_t).x0 + sqrt(1-alpha_bar_t).eps, t) ||^2]
+
+4.1.2. DDFM – Fusion nhu Bayesian Posterior Sampling (ICCV 2023 Oral)
+DDFM formulate fusion nhu tinh posterior p(x_F | I_IR, I_VIS) va phan ra bang EM algorithm:
+p(x_F | I_IR, I_VIS)  ∝  p(x_F) . p(I_IR, I_VIS | x_F)
+
+•	Subproblem 1 – Unconditional score: ∇_{x_t} log p_theta(x_t) → tinh bang score function cua pre-trained DDPM (khong can re-train)
+•	Subproblem 2 – Likelihood score: ∇_{x_t} log p(I_IR, I_VIS | x_t) → mo hinh hoa bang hierarchical Bayesian:
+  log p(I | x_t) = Sum_i log p(I_i | z_i) + log p(z_i | x_t)
+Trong do z_i la latent variable cho modality i, toi uu bang EM: E-step (estimate z_i), M-step (update gradient).
+
+Ghi chu: Uu diem: DDFM khong can training data fusion (zero-shot); chi can pre-trained diffusion model. Nhuoc diem: inference cham (nhieu denoising steps T).
+
+4.2. Frequency-domain Diffusion: Dif-Fusion (2023)
+Dif-Fusion phan tach anh theo frequency domain truoc khi ap dung diffusion: low-frequency fusion bang weighted average; high-frequency enhance bang guided diffusion process. Bao toan color fidelity va tang sharpness dong thoi.
+
+4.3. VLM-Guided Fusion (ICML 2024)
+Su dung Vision-Language Model (CLIP, BLIP-2) de huong dan decomposition va fusion. Text prompt (vi du: 'preserve pedestrian thermal signature') duoc encode thanh text embedding, cross-attend voi image feature de dieu khien fusion weight. Decomposition tro nen task-adaptive.
+ 
+5. Nhom 4: Physical-Prior Decomposition
+
+5.1. Retinex Decomposition
+5.1.1. Ly thuyet Retinex (Land & McCann, 1971)
+Mo hinh hoa anh quan sat I nhu tich cua hai thanh phan:
+I(x,y) = L(x,y) . R(x,y)
+trong do L(x,y) la illumination map (anh sang nen, bien doi cham) va R(x,y) la reflectance map (noi dung thuc, mau sac va canh).
+
+Trong log domain: log I = log L + log R
+Illumination L uoc luong bang Total Variation minimization:
+L* = argmin_L { ||log I - log L||^2 + lambda . TV(log L) }
+
+5.1.2. Ung dung trong Low-light Image Fusion
+IR: thong tin thermal reliable, cao tuong phan. VIS: thong tin mau sac. Sau Retinex decomposition:
+•	Lay illumination L tu IR (IR co do tuong phan cao va nhat quan)
+•	Lay reflectance R tu VIS (VIS co thong tin mau sac)
+•	Tai tao: I_F = L_IR . R_VIS (enhanced, colorful, high-contrast)
+
+5.2. Hilbert Vibration Decomposition (HVD, 2024)
+5.2.1. Ly thuyet HVD
+HVD la phuong phap adaptive decomposition khong can basis function co dinh. Tin hieu f(t) bieu dien la tong cac thanh phan dao dong:
+f(t) = Sum_k A_k(t) . cos(phi_k(t)) + r(t)
+trong do A_k(t) la instantaneous amplitude va phi_k(t) la instantaneous phase. Phep bien doi Hilbert tinh analytical signal:
+f_a(t) = f(t) + i.H{f(t)} = A(t).exp(i.phi(t))
+
+Khac voi EMD (Empirical Mode Decomposition), HVD khong dung sifting process nen it mode mixing. HVD decompose anh 2D thanh spatial frequency components non-stationary (bien doi theo vi tri).
+
+Ghi chu: Uu diem: khong can xac dinh cut-off frequency truoc, thich nghi voi local signal structure. Phu hop cho anh co texture phuc tap.
+ 
+6. Nhom 5: Invertible Neural Network (INN) / Flow-based
+Su dung tinh kha nghich (invertibility) nhu rang buoc kien truc, dam bao khong co thong tin nao bi mat. Quan trong trong y te (interpretability, reconstruction).
+
+6.1. Nen tang toan hoc cua INN
+6.1.1. Affine Coupling Layer (RealNVP, Dinh et al. 2017)
+Cho input x = (x1, x2):
+y1 = x1
+y2 = x2 * exp(s(x1)) + t(x1)
+Trong do s(.) va t(.) la cac mang neural tuy y (khong can kha nghich). Bien doi nguoc:
+x1 = y1
+x2 = (y2 - t(y1)) * exp(-s(y1))
+
+Jacobian la triangular → determinant tinh de dang: log|det J| = Sum s(x1)
+
+6.1.2. Change of Variables Formula
+Voi INN f: x → z, likelihood cua du lieu:
+log p(x) = log p_Z(f(x)) + log |det(df/dx)|
+Trong do p_Z la prior (Gaussian). Training maximize log-likelihood nay.
+
+6.2. Haar Wavelet Downsampling trong INN
+Thay vi strided convolution (mat thong tin), nhieu INN dung Haar wavelet downsampling de squeeze spatial dimensions vao channel dimension:
+x thuoc R^{H×W×C}  →  z thuoc R^{H/2×W/2×4C}
+Day la phep bien doi kha nghich, preserve thong tin qua tat ca layers.
+
+6.3. FusionINN – End-to-end Invertible Fusion (2024)
+6.3.1. Framework
+FusionINN tich hop dong thoi image decomposition va fusion vao mot normalizing flow end-to-end:
+(z_s, z_A, z_B) = f_INN(I^A, I^B)
+Trong do z_s la shared latent, z_A, z_B la modality-specific latents. Fused image:
+I^F = f_INN^{-1}(z_s, 0, 0)
+
+Tai tao source images:
+I^A_hat = f_INN^{-1}(z_s, z_A, 0)
+Kha nang tai tao source images tu fused image la dac tinh quan trong trong ung dung y te.
+
+6.3.2. Training Objective
+•	Reconstruction loss: ||I^A - I^A_hat||_1 + ||I^B - I^B_hat||_1
+•	Fusion quality: perceptual loss + gradient loss tren I^F
+•	Disentanglement: KL divergence align z_s; khuyen khich z_A, z_B orthogonal
+
+6.4. EMMA – Equivariant Multi-Modal Alignment (CVPR 2024)
+EMMA su dung equivariant network de hoc phep bien doi giua modalities. Equivariance dam bao: neu anh bi transform (rotate, flip), feature map cung transform tuong ung → alignment tot hon giua IR va VIS khi co misalignment.
+ 
+7. So sanh tong hop cac phuong phap
+
+Phuong phap	Nen tang ly thuyet	Decomp. type	Uu diem	Nhuoc diem
+DWT/Wavelet	Phan tich tan so, tuyen tinh	Multi-scale, low/high freq	Perfect reconst., nhanh	Shift-variant, it huong
+NSST	Shearlet, khong downsample	Multi-scale, multi-direction	Khong aliasing, nhieu huong	Chi phi tinh toan cao
+Laplacian Pyramid	Gaussian blur + difference	Multi-scale base-detail	Don gian, truc quan	Halo artifact
+Guided Filter	Mo hinh tuyen tinh cuc bo	Base-detail (edge-aware)	Bao toan canh, O(n)	Khong multi-scale mac dinh
+CDDFuse (CVPR23)	Corr. loss + INN + Transformer	Base/detail corr-driven	SOTA, end-to-end, da task	Can training data lon
+DDFM (ICCV23)	DDPM, Bayesian, EM	Latent (generative)	Zero-shot, chat luong cao	Inference cham
+Retinex	Mo hinh sinh anh (L.R)	Illumination/Reflectance	Dien giai duoc, low-light	Nhay voi anh nhieu
+HVD (2024)	Hilbert, adaptive	Instantaneous freq/ampl.	Adaptive, khong basis co dinh	Phuc tap, it benchmark
+FusionINN (2024)	Normalizing flow	Shared/specific (invertible)	Fully invertible, tai tao duoc	Memory lon
+WMambaFuse (2025)	Mamba SSM + Wavelet	Freq + spatial (hybrid)	Hieu qua O(n), SOTA 2025	Moi, it danh gia
+
+
+8. Benchmark va Dataset tieu bieu
+
+Dataset	Modality	Task	Ghi chu
+TNO	IR + VIS	IR-VIS Fusion	Military scenarios, 9 pairs
+RoadScene	IR + VIS	IR-VIS Fusion	Street scenes, 221 pairs
+MSRS	IR + VIS	Fusion + Detection	SOTA benchmark, Pedestrian
+MFNet	IR + VIS	Fusion + Segmentation	Semantic labels included
+Harvard Medical	CT + MRI + PET	Medical Fusion	Multi-modal brain scans
+LLVIP	IR + VIS	Low-light Fusion	Night surveillance, 16836 pairs
+
+Metric	Cong thuc / Dinh nghia	Y nghia
+EN (Entropy)	H = -Sum p_i log p_i	Do phong phu thong tin
+SF (Spatial Freq.)	SF = sqrt(RF^2 + CF^2)	Muc do bien doi khong gian
+MI (Mutual Info.)	MI = Sum p(f,s) log[p(f,s)/p(f)p(s)]	Thong tin chia se fused va source
+SSIM	SSIM = l . c . s (luminance, contrast, structure)	Do tuong dong cau truc
+VIF	Based on HVS channel model	Visual Information Fidelity
+LPIPS	Deep feature distance (VGG/AlexNet)	Perceptual similarity
+mAP (detection)	Precision-Recall AUC	Danh gia downstream detection
+
+ 
+9. Xu huong nghien cuu 2024-2025
+
+9.1. Ket hop da phuong phap (Hybrid)
+Hau het SOTA 2024-2025 ket hop it nhat hai nhom decomposition:
+•	Wavelet + Transformer: Wavelet cung cap frequency decomposition; Transformer hoc global fusion weight
+•	INN + Diffusion: INN dam bao invertibility; Diffusion nang cao chat luong visual
+•	Retinex + Deep Learning: Physical prior guide + neural network optimize
+
+9.2. Task-driven Decomposition
+Xu huong lon: tich hop downstream task vao loss function cua decomposition. Vi du trong MSRS benchmark, fusion loss duoc joint voi segmentation loss:
+L_total = L_fusion + lambda . L_seg + mu . L_det
+Dieu nay buoc decomposition phai giu nhung feature quan trong cho detection/segmentation, khong chi toi uu do trung thuc anh.
+
+9.3. Efficient Architecture: Mamba / SSM
+Mamba (Gu & Dao, 2023) voi Selective State Space Model (S6) cung cap alternative cho Transformer voi O(n) thay vi O(n^2):
+h'(t) = A(t).h(t) + B(t).x(t)
+y(t) = C(t).h(t)
+A, B, C la time-varying matrices (selective) – khac voi SSM truyen thong fixed. Quan trong cho fusion anh high-resolution (4K medical, satellite imagery).
+
+9.4. Foundation Model va Zero-shot Fusion
+Su dung large pre-trained model (SAM, CLIP, Stable Diffusion) lam backbone cho fusion ma khong can fine-tune tren fusion dataset. DDFM (2023) la buoc dau; xu huong 2025 mo rong voi text-guided va multimodal foundation models.
+
+9.5. Interpretable va Medical Fusion
+Trong y te, yeu cau interpretability ngay cang cao: FusionINN va cac phuong phap invertible cho phep 'undo' qua trinh fusion, kiem chung xem thong tin tu tung modality dong gop nhu the nao vao ket qua chan doan.
+ 
+10. Ket luan
+
+Image decomposition dong vai tro nen tang trong Image Fusion SOTA. Cac nhan dinh chinh:
+
+•	Khong co phuong phap toi uu toan dien: Multi-scale transform nhanh va interpretable; Deep learning cho chat luong tot hon; Diffusion-based tot nhat ve visual quality nhung cham.
+•	Frequency split (low/high) la mau so chung: hau het moi framework deu implicitly hoac explicitly phan tach anh theo chieu nay.
+•	INN va invertibility ngay cang quan trong: dac biet trong ung dung y te va cac tinh huong can reconstruction.
+•	Diffusion model mo ra paradigm moi: fusion nhu Bayesian inference, khong can fusion-specific training data.
+•	Xu huong 2025: Mamba + Wavelet + Task-aware loss la huong co nhieu tiem nang nhat.
+
+
+Tai lieu tham khao tuyen chon
+
+[1] Zhao Z., et al. CDDFuse: Correlation-Driven Dual-Branch Feature Decomposition for Multi-Modality Image Fusion. CVPR 2023.
+[2] Zhao Z., et al. DDFM: Denoising Diffusion Model for Multi-Modality Image Fusion. ICCV 2023 (Oral).
+[3] Tang L., et al. PSFusion: A Semantic-Aware Real-Time Infrared and Visible Image Fusion Network. IEEE TIP 2023.
+[4] He K., et al. Guided Image Filtering. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2013.
+[5] Dinh L., et al. Density Estimation Using Real-Valued Non-Volume Preserving (RealNVP). ICLR 2017.
+[6] Ho J., Jain A., Abbeel P. Denoising Diffusion Probabilistic Models. NeurIPS 2020.
+[7] Gu A., Dao T. Mamba: Linear-Time Sequence Modeling with Selective State Spaces. arXiv 2023.
+[8] WMambaFuse: Wavelet-domain Mamba for Infrared and Visible Image Fusion. arXiv 2025.
+[9] FusionINN: Invertible Neural Network for End-to-End Image Fusion. IEEE TIP 2024.
+[10] DAF-Net: Dual Adaptive Fusion Network with MK-MMD for IR-VIS Fusion. ICCV 2024.
+[11] MLGEPF: Multilevel Guided Edge-Preserving Filter for Medical Image Fusion. 2024.
+[12] EMMA: Equivariant Multi-Modal Alignment for Infrared-Visible Fusion. CVPR 2024.
+[13] Dif-Fusion: Toward High Color Fidelity in Infrared and Visible Image Fusion. IEEE TIP 2023.
+[14] Land E.H., McCann J.J. Lightness and the Retinex Theory. Journal of the Optical Society of America, 1971.
+
+
